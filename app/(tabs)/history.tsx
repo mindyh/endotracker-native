@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS } from "../../constants/theme";
 
 interface HistoryEntry {
     id: string;
@@ -55,7 +56,7 @@ export default function HistoryScreen() {
             <View style={styles.header}>
                 <Text style={styles.title}>Symptom History</Text>
                 <TouchableOpacity style={styles.filterButton}>
-                    <Ionicons name="filter-outline" size={20} color="#2563eb" />
+                    <Ionicons name="filter-outline" size={20} color={COLORS.accent} />
                     <Text style={styles.filterButtonText}>Filter</Text>
                 </TouchableOpacity>
             </View>
@@ -65,7 +66,7 @@ export default function HistoryScreen() {
                     mockHistory.map(renderHistoryItem)
                 ) : (
                     <View style={styles.emptyState}>
-                        <Ionicons name="document-outline" size={64} color="#9ca3af" />
+                        <Ionicons name="document-outline" size={64} color={COLORS.textTertiary} />
                         <Text style={styles.emptyStateText}>No entries yet</Text>
                         <Text style={styles.emptyStateSubtext}>Start logging your symptoms to see your history here</Text>
                     </View>
@@ -78,79 +79,79 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#4a7c59",
+        backgroundColor: COLORS.background,
     },
     header: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: 20,
-        backgroundColor: "white",
+        padding: SPACING.lg,
+        backgroundColor: COLORS.white,
         borderBottomWidth: 1,
-        borderBottomColor: "#e5e7eb",
+        borderBottomColor: COLORS.neutral,
     },
     title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "#1f2937",
+        fontSize: FONT_SIZES.xl,
+        fontWeight: FONT_WEIGHTS.bold,
+        color: COLORS.textPrimary,
     },
     filterButton: {
         flexDirection: "row",
         alignItems: "center",
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 6,
+        paddingHorizontal: SPACING.sm,
+        paddingVertical: SPACING.xs,
+        borderRadius: BORDER_RADIUS.sm,
         borderWidth: 1,
-        borderColor: "#2563eb",
+        borderColor: COLORS.accent,
     },
     filterButtonText: {
-        color: "#2563eb",
-        marginLeft: 4,
-        fontSize: 14,
-        fontWeight: "500",
+        color: COLORS.accent,
+        marginLeft: SPACING.xs,
+        fontSize: FONT_SIZES.sm,
+        fontWeight: FONT_WEIGHTS.medium,
     },
     historyList: {
         flex: 1,
-        padding: 20,
+        padding: SPACING.lg,
     },
     historyItem: {
-        backgroundColor: "white",
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 12,
+        backgroundColor: COLORS.white,
+        padding: SPACING.md,
+        borderRadius: BORDER_RADIUS.md,
+        marginBottom: SPACING.sm,
         borderWidth: 1,
-        borderColor: "#e5e7eb",
+        borderColor: COLORS.neutral,
     },
     historyHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 8,
+        marginBottom: SPACING.sm,
     },
     dateText: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#1f2937",
+        fontSize: FONT_SIZES.md,
+        fontWeight: FONT_WEIGHTS.semibold,
+        color: COLORS.textPrimary,
     },
     painLevelBadge: {
-        backgroundColor: "#ef4444",
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 4,
+        backgroundColor: COLORS.error,
+        paddingHorizontal: SPACING.sm,
+        paddingVertical: SPACING.xs,
+        borderRadius: BORDER_RADIUS.sm,
     },
     painLevelText: {
-        color: "white",
-        fontSize: 12,
-        fontWeight: "600",
+        color: COLORS.white,
+        fontSize: FONT_SIZES.xs,
+        fontWeight: FONT_WEIGHTS.semibold,
     },
     symptomsText: {
-        fontSize: 14,
-        color: "#374151",
-        marginBottom: 4,
+        fontSize: FONT_SIZES.sm,
+        color: COLORS.textSecondary,
+        marginBottom: SPACING.xs,
     },
     notesText: {
-        fontSize: 12,
-        color: "#6b7280",
+        fontSize: FONT_SIZES.xs,
+        color: COLORS.textTertiary,
         fontStyle: "italic",
     },
     emptyState: {
@@ -159,14 +160,14 @@ const styles = StyleSheet.create({
         paddingVertical: 60,
     },
     emptyStateText: {
-        fontSize: 18,
-        fontWeight: "600",
-        color: "#9ca3af",
-        marginVertical: 12,
+        fontSize: FONT_SIZES.lg,
+        fontWeight: FONT_WEIGHTS.semibold,
+        color: COLORS.textTertiary,
+        marginVertical: SPACING.sm,
     },
     emptyStateSubtext: {
-        fontSize: 14,
-        color: "#9ca3af",
+        fontSize: FONT_SIZES.sm,
+        color: COLORS.textTertiary,
         textAlign: "center",
         maxWidth: 240,
     },

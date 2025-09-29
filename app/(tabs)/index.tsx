@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS, FONT_SIZES } from "../../constants/theme";
 
 export default function LogEntryScreen() {
   const [symptoms, setSymptoms] = useState("");
@@ -71,63 +72,59 @@ export default function LogEntryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#4a7c59",
+    backgroundColor: COLORS.background,
   },
   content: {
-    margin: 20,
-    padding: 24,
-    backgroundColor: "#ffffff",
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
+    margin: SPACING.lg,
+    padding: SPACING.xl,
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.xl,
+    ...SHADOWS.large,
   },
   title: {
-    fontSize: 28,
+    fontSize: FONT_SIZES.xxxxl,
     fontWeight: "700",
-    marginBottom: 24,
+    marginBottom: SPACING.xl,
     textAlign: "center",
-    color: "#2d5a3d",
+    color: COLORS.primaryDark,
   },
   inputGroup: {
-    marginBottom: 20,
+    marginBottom: SPACING.lg,
   },
   label: {
-    fontSize: 16,
+    fontSize: FONT_SIZES.md,
     fontWeight: "600",
-    marginBottom: 8,
-    color: "#2d5a3d",
+    marginBottom: SPACING.sm,
+    color: COLORS.primaryDark,
   },
   textInput: {
     borderWidth: 1.5,
-    borderColor: "#a3d5b7",
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    backgroundColor: "#f8fdf9",
+    borderColor: COLORS.primaryLight,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.md,
+    fontSize: FONT_SIZES.md,
+    backgroundColor: COLORS.primaryBackground,
     minHeight: 52,
-    color: "#2d5a3d",
+    color: COLORS.primaryDark,
   },
   submitButton: {
-    backgroundColor: "#4a7c59",
+    backgroundColor: COLORS.primary,
     padding: 18,
-    borderRadius: 16,
+    borderRadius: BORDER_RADIUS.lg,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 24,
-    shadowColor: "#4a7c59",
+    marginTop: SPACING.xl,
+    shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
   },
   submitButtonText: {
-    color: "white",
-    fontSize: 18,
+    color: COLORS.white,
+    fontSize: FONT_SIZES.lg,
     fontWeight: "600",
-    marginLeft: 8,
+    marginLeft: SPACING.sm,
   },
 });

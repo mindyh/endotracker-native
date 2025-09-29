@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Linking, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { COLORS, SHADOWS, SPACING, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS } from "../constants/theme";
 
 export default function AboutScreen() {
     const openURL = async (url: string) => {
@@ -14,7 +15,7 @@ export default function AboutScreen() {
     const renderInfoCard = (title: string, content: string, icon: string) => (
         <View style={styles.infoCard}>
             <View style={styles.cardHeader}>
-                <Ionicons name={icon as any} size={24} color="#2563eb" />
+                <Ionicons name={icon as any} size={24} color={COLORS.accent} />
                 <Text style={styles.cardTitle}>{title}</Text>
             </View>
             <Text style={styles.cardContent}>{content}</Text>
@@ -24,13 +25,13 @@ export default function AboutScreen() {
     const renderLinkItem = (title: string, subtitle: string, icon: string, url: string) => (
         <TouchableOpacity style={styles.linkItem} onPress={() => openURL(url)}>
             <View style={styles.linkLeft}>
-                <Ionicons name={icon as any} size={24} color="#2563eb" />
+                <Ionicons name={icon as any} size={24} color={COLORS.accent} />
                 <View style={styles.linkText}>
                     <Text style={styles.linkTitle}>{title}</Text>
                     <Text style={styles.linkSubtitle}>{subtitle}</Text>
                 </View>
             </View>
-            <Ionicons name="open-outline" size={20} color="#9ca3af" />
+            <Ionicons name="open-outline" size={20} color={COLORS.textTertiary} />
         </TouchableOpacity>
     );
 
@@ -39,7 +40,7 @@ export default function AboutScreen() {
             <View style={styles.content}>
                 <View style={styles.header}>
                     <View style={styles.logo}>
-                        <Ionicons name="medical" size={48} color="#2563eb" />
+                        <Ionicons name="medical" size={48} color={COLORS.accent} />
                     </View>
                     <Text style={styles.appName}>EndoTracker</Text>
                     <Text style={styles.version}>Version 1.0.0</Text>
@@ -124,87 +125,83 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#4a7c59",
+        backgroundColor: COLORS.background,
     },
     content: {
-        padding: 20,
+        padding: SPACING.lg,
     },
     header: {
         alignItems: "center",
-        marginBottom: 30,
-        paddingVertical: 20,
+        marginBottom: SPACING.xl,
+        paddingVertical: SPACING.lg,
     },
     logo: {
-        backgroundColor: "white",
-        padding: 20,
-        borderRadius: 20,
-        marginBottom: 16,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        backgroundColor: COLORS.white,
+        padding: SPACING.lg,
+        borderRadius: BORDER_RADIUS.lg,
+        marginBottom: SPACING.md,
+        ...SHADOWS.small,
     },
     appName: {
         fontSize: 28,
-        fontWeight: "bold",
-        color: "#1f2937",
-        marginBottom: 4,
+        fontWeight: FONT_WEIGHTS.bold,
+        color: COLORS.textPrimary,
+        marginBottom: SPACING.xs,
     },
     version: {
-        fontSize: 14,
-        color: "#6b7280",
-        marginBottom: 8,
+        fontSize: FONT_SIZES.sm,
+        color: COLORS.textTertiary,
+        marginBottom: SPACING.sm,
     },
     tagline: {
-        fontSize: 16,
-        color: "#374151",
+        fontSize: FONT_SIZES.md,
+        color: COLORS.textSecondary,
         textAlign: "center",
         fontStyle: "italic",
     },
     infoCard: {
-        backgroundColor: "white",
-        padding: 20,
-        borderRadius: 12,
-        marginBottom: 16,
+        backgroundColor: COLORS.white,
+        padding: SPACING.lg,
+        borderRadius: BORDER_RADIUS.md,
+        marginBottom: SPACING.md,
         borderWidth: 1,
-        borderColor: "#e5e7eb",
+        borderColor: COLORS.neutral,
     },
     cardHeader: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 12,
+        marginBottom: SPACING.sm,
     },
     cardTitle: {
-        fontSize: 18,
-        fontWeight: "600",
-        color: "#1f2937",
-        marginLeft: 12,
+        fontSize: FONT_SIZES.lg,
+        fontWeight: FONT_WEIGHTS.semibold,
+        color: COLORS.textPrimary,
+        marginLeft: SPACING.sm,
     },
     cardContent: {
-        fontSize: 14,
-        color: "#374151",
+        fontSize: FONT_SIZES.sm,
+        color: COLORS.textSecondary,
         lineHeight: 20,
     },
     section: {
-        marginBottom: 30,
+        marginBottom: SPACING.xl,
     },
     sectionTitle: {
-        fontSize: 18,
-        fontWeight: "600",
-        color: "#1f2937",
-        marginBottom: 16,
+        fontSize: FONT_SIZES.lg,
+        fontWeight: FONT_WEIGHTS.semibold,
+        color: COLORS.textPrimary,
+        marginBottom: SPACING.md,
     },
     linkItem: {
-        backgroundColor: "white",
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 8,
+        backgroundColor: COLORS.white,
+        padding: SPACING.md,
+        borderRadius: BORDER_RADIUS.md,
+        marginBottom: SPACING.sm,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         borderWidth: 1,
-        borderColor: "#e5e7eb",
+        borderColor: COLORS.neutral,
     },
     linkLeft: {
         flexDirection: "row",
@@ -212,35 +209,35 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     linkText: {
-        marginLeft: 12,
+        marginLeft: SPACING.sm,
         flex: 1,
     },
     linkTitle: {
-        fontSize: 16,
-        fontWeight: "500",
-        color: "#1f2937",
+        fontSize: FONT_SIZES.md,
+        fontWeight: FONT_WEIGHTS.medium,
+        color: COLORS.textPrimary,
     },
     linkSubtitle: {
-        fontSize: 12,
-        color: "#6b7280",
+        fontSize: FONT_SIZES.xs,
+        color: COLORS.textTertiary,
         marginTop: 2,
     },
     footer: {
         alignItems: "center",
-        paddingVertical: 30,
+        paddingVertical: SPACING.xl,
         borderTopWidth: 1,
-        borderTopColor: "#e5e7eb",
-        marginTop: 20,
+        borderTopColor: COLORS.neutral,
+        marginTop: SPACING.lg,
     },
     footerText: {
-        fontSize: 14,
-        color: "#374151",
+        fontSize: FONT_SIZES.sm,
+        color: COLORS.textSecondary,
         textAlign: "center",
-        marginBottom: 8,
+        marginBottom: SPACING.sm,
     },
     copyright: {
-        fontSize: 12,
-        color: "#9ca3af",
+        fontSize: FONT_SIZES.xs,
+        color: COLORS.textTertiary,
         textAlign: "center",
     },
 });

@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Switch, Alert } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS } from "../constants/theme";
 
 export default function SettingsScreen() {
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -35,13 +36,13 @@ export default function SettingsScreen() {
     ) => (
         <TouchableOpacity style={styles.settingItem} onPress={onPress} disabled={!onPress}>
             <View style={styles.settingLeft}>
-                <Ionicons name={icon as any} size={24} color="#2563eb" />
+                <Ionicons name={icon as any} size={24} color={COLORS.accent} />
                 <View style={styles.settingText}>
                     <Text style={styles.settingTitle}>{title}</Text>
                     <Text style={styles.settingSubtitle}>{subtitle}</Text>
                 </View>
             </View>
-            {rightElement || (onPress && <Ionicons name="chevron-forward" size={20} color="#9ca3af" />)}
+            {rightElement || (onPress && <Ionicons name="chevron-forward" size={20} color={COLORS.textTertiary} />)}
         </TouchableOpacity>
     );
 
@@ -60,8 +61,8 @@ export default function SettingsScreen() {
                         <Switch
                             value={notificationsEnabled}
                             onValueChange={setNotificationsEnabled}
-                            trackColor={{ false: "#d1d5db", true: "#93c5fd" }}
-                            thumbColor={notificationsEnabled ? "#2563eb" : "#f3f4f6"}
+                            trackColor={{ false: COLORS.gray300, true: "#93c5fd" }}
+                            thumbColor={notificationsEnabled ? COLORS.accent : COLORS.gray100}
                         />
                     )}
                     {renderSettingItem(
@@ -72,8 +73,8 @@ export default function SettingsScreen() {
                         <Switch
                             value={dailyReminders}
                             onValueChange={setDailyReminders}
-                            trackColor={{ false: "#d1d5db", true: "#93c5fd" }}
-                            thumbColor={dailyReminders ? "#2563eb" : "#f3f4f6"}
+                            trackColor={{ false: COLORS.gray300, true: "#93c5fd" }}
+                            thumbColor={dailyReminders ? COLORS.accent : COLORS.gray100}
                         />
                     )}
                 </View>
@@ -88,8 +89,8 @@ export default function SettingsScreen() {
                         <Switch
                             value={dataSync}
                             onValueChange={setDataSync}
-                            trackColor={{ false: "#d1d5db", true: "#93c5fd" }}
-                            thumbColor={dataSync ? "#2563eb" : "#f3f4f6"}
+                            trackColor={{ false: COLORS.gray300, true: "#93c5fd" }}
+                            thumbColor={dataSync ? COLORS.accent : COLORS.gray100}
                         />
                     )}
                     {renderSettingItem(
@@ -132,13 +133,13 @@ export default function SettingsScreen() {
                     <Text style={styles.sectionTitle}>Danger Zone</Text>
                     <TouchableOpacity style={styles.dangerItem} onPress={handleClearData}>
                         <View style={styles.settingLeft}>
-                            <Ionicons name="trash-outline" size={24} color="#ef4444" />
+                            <Ionicons name="trash-outline" size={24} color={COLORS.error} />
                             <View style={styles.settingText}>
-                                <Text style={[styles.settingTitle, { color: "#ef4444" }]}>Clear All Data</Text>
+                                <Text style={[styles.settingTitle, { color: COLORS.error }]}>Clear All Data</Text>
                                 <Text style={styles.settingSubtitle}>Permanently delete all your data</Text>
                             </View>
                         </View>
-                        <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+                        <Ionicons name="chevron-forward" size={20} color={COLORS.textTertiary} />
                     </TouchableOpacity>
                 </View>
 
@@ -153,44 +154,44 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#4a7c59",
+        backgroundColor: COLORS.background,
     },
     content: {
-        padding: 20,
+        padding: SPACING.lg,
     },
     title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 20,
+        fontSize: FONT_SIZES.xl,
+        fontWeight: FONT_WEIGHTS.bold,
+        marginBottom: SPACING.lg,
         textAlign: "center",
-        color: "#1f2937",
+        color: COLORS.textPrimary,
     },
     section: {
-        marginBottom: 30,
+        marginBottom: SPACING.xl,
     },
     sectionTitle: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#374151",
-        marginBottom: 12,
+        fontSize: FONT_SIZES.md,
+        fontWeight: FONT_WEIGHTS.semibold,
+        color: COLORS.textSecondary,
+        marginBottom: SPACING.sm,
         textTransform: "uppercase",
         letterSpacing: 0.5,
     },
     settingItem: {
-        backgroundColor: "white",
-        padding: 16,
-        borderRadius: 8,
+        backgroundColor: COLORS.white,
+        padding: SPACING.md,
+        borderRadius: BORDER_RADIUS.md,
         marginBottom: 2,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         borderWidth: 1,
-        borderColor: "#e5e7eb",
+        borderColor: COLORS.neutral,
     },
     dangerItem: {
-        backgroundColor: "white",
-        padding: 16,
-        borderRadius: 8,
+        backgroundColor: COLORS.white,
+        padding: SPACING.md,
+        borderRadius: BORDER_RADIUS.md,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
@@ -203,26 +204,26 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     settingText: {
-        marginLeft: 12,
+        marginLeft: SPACING.sm,
         flex: 1,
     },
     settingTitle: {
-        fontSize: 16,
-        fontWeight: "500",
-        color: "#1f2937",
+        fontSize: FONT_SIZES.md,
+        fontWeight: FONT_WEIGHTS.medium,
+        color: COLORS.textPrimary,
     },
     settingSubtitle: {
-        fontSize: 12,
-        color: "#6b7280",
+        fontSize: FONT_SIZES.xs,
+        color: COLORS.textTertiary,
         marginTop: 2,
     },
     versionInfo: {
         alignItems: "center",
-        marginTop: 20,
-        paddingBottom: 20,
+        marginTop: SPACING.lg,
+        paddingBottom: SPACING.lg,
     },
     versionText: {
-        fontSize: 12,
-        color: "#9ca3af",
+        fontSize: FONT_SIZES.xs,
+        color: COLORS.textTertiary,
     },
 });

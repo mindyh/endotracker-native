@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS } from "../../constants/theme";
 
 const { width } = Dimensions.get("window");
 
@@ -45,10 +46,10 @@ export default function AnalyticsScreen() {
                 <Text style={styles.title}>Analytics</Text>
 
                 <View style={styles.statsContainer}>
-                    {renderStatCard("Average Pain Level", averagePainLevel.toFixed(1), "analytics-outline", "#ef4444")}
-                    {renderStatCard("Total Entries", totalEntries, "document-text-outline", "#2563eb")}
-                    {renderStatCard("This Week", "3 entries", "calendar-outline", "#059669")}
-                    {renderStatCard("Trend", "Improving", "trending-up-outline", "#f59e0b")}
+                    {renderStatCard("Average Pain Level", averagePainLevel.toFixed(1), "analytics-outline", COLORS.error)}
+                    {renderStatCard("Total Entries", totalEntries, "document-text-outline", COLORS.accent)}
+                    {renderStatCard("This Week", "3 entries", "calendar-outline", COLORS.success)}
+                    {renderStatCard("Trend", "Improving", "trending-up-outline", COLORS.warning)}
                 </View>
 
                 <View style={styles.chartSection}>
@@ -63,13 +64,13 @@ export default function AnalyticsScreen() {
                 <View style={styles.insightsSection}>
                     <Text style={styles.sectionTitle}>Insights</Text>
                     <View style={styles.insightCard}>
-                        <Ionicons name="bulb-outline" size={20} color="#f59e0b" />
+                        <Ionicons name="bulb-outline" size={20} color={COLORS.warning} />
                         <Text style={styles.insightText}>
                             Your pain levels tend to be higher on weekdays. Consider tracking stress levels.
                         </Text>
                     </View>
                     <View style={styles.insightCard}>
-                        <Ionicons name="medical-outline" size={20} color="#2563eb" />
+                        <Ionicons name="medical-outline" size={20} color={COLORS.accent} />
                         <Text style={styles.insightText}>
                             Abdominal pain is your most frequent symptom. Discuss dietary triggers with your doctor.
                         </Text>
@@ -83,69 +84,69 @@ export default function AnalyticsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#4a7c59",
+        backgroundColor: COLORS.background,
     },
     content: {
-        padding: 20,
+        padding: SPACING.lg,
     },
     title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 20,
+        fontSize: FONT_SIZES.xl,
+        fontWeight: FONT_WEIGHTS.bold,
+        marginBottom: SPACING.lg,
         textAlign: "center",
-        color: "#1f2937",
+        color: COLORS.textPrimary,
     },
     statsContainer: {
-        marginBottom: 30,
+        marginBottom: SPACING.xl,
     },
     statCard: {
-        backgroundColor: "white",
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 12,
+        backgroundColor: COLORS.white,
+        padding: SPACING.md,
+        borderRadius: BORDER_RADIUS.md,
+        marginBottom: SPACING.sm,
         borderLeftWidth: 4,
         borderWidth: 1,
-        borderColor: "#e5e7eb",
+        borderColor: COLORS.neutral,
     },
     statHeader: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: 8,
+        marginBottom: SPACING.sm,
     },
     statTitle: {
-        fontSize: 14,
-        color: "#6b7280",
-        marginLeft: 8,
-        fontWeight: "500",
+        fontSize: FONT_SIZES.sm,
+        color: COLORS.textTertiary,
+        marginLeft: SPACING.sm,
+        fontWeight: FONT_WEIGHTS.medium,
     },
     statValue: {
-        fontSize: 24,
-        fontWeight: "bold",
+        fontSize: FONT_SIZES.xl,
+        fontWeight: FONT_WEIGHTS.bold,
     },
     chartSection: {
-        marginBottom: 30,
+        marginBottom: SPACING.xl,
     },
     sectionTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#1f2937",
-        marginBottom: 16,
+        fontSize: FONT_SIZES.lg,
+        fontWeight: FONT_WEIGHTS.bold,
+        color: COLORS.textPrimary,
+        marginBottom: SPACING.md,
     },
     symptomChart: {
-        backgroundColor: "white",
-        padding: 16,
-        borderRadius: 8,
+        backgroundColor: COLORS.white,
+        padding: SPACING.md,
+        borderRadius: BORDER_RADIUS.md,
         borderWidth: 1,
-        borderColor: "#e5e7eb",
+        borderColor: COLORS.neutral,
     },
     symptomItem: {
-        marginBottom: 16,
+        marginBottom: SPACING.md,
     },
     symptomName: {
-        fontSize: 14,
-        fontWeight: "500",
-        color: "#374151",
-        marginBottom: 4,
+        fontSize: FONT_SIZES.sm,
+        fontWeight: FONT_WEIGHTS.medium,
+        color: COLORS.textSecondary,
+        marginBottom: SPACING.xs,
     },
     symptomBarContainer: {
         flexDirection: "row",
@@ -153,33 +154,33 @@ const styles = StyleSheet.create({
     },
     symptomBar: {
         height: 8,
-        backgroundColor: "#2563eb",
-        borderRadius: 4,
-        marginRight: 8,
+        backgroundColor: COLORS.accent,
+        borderRadius: BORDER_RADIUS.sm,
+        marginRight: SPACING.sm,
     },
     symptomCount: {
-        fontSize: 12,
-        color: "#6b7280",
-        fontWeight: "500",
+        fontSize: FONT_SIZES.xs,
+        color: COLORS.textTertiary,
+        fontWeight: FONT_WEIGHTS.medium,
     },
     insightsSection: {
-        marginBottom: 20,
+        marginBottom: SPACING.lg,
     },
     insightCard: {
-        backgroundColor: "white",
-        padding: 16,
-        borderRadius: 8,
-        marginBottom: 12,
+        backgroundColor: COLORS.white,
+        padding: SPACING.md,
+        borderRadius: BORDER_RADIUS.md,
+        marginBottom: SPACING.sm,
         borderWidth: 1,
-        borderColor: "#e5e7eb",
+        borderColor: COLORS.neutral,
         flexDirection: "row",
         alignItems: "flex-start",
     },
     insightText: {
         flex: 1,
-        fontSize: 14,
-        color: "#374151",
-        marginLeft: 12,
+        fontSize: FONT_SIZES.sm,
+        color: COLORS.textSecondary,
+        marginLeft: SPACING.sm,
         lineHeight: 20,
     },
 });
