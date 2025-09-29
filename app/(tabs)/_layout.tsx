@@ -22,20 +22,29 @@ export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: "#2563eb",
-                tabBarInactiveTintColor: "#6b7280",
+                tabBarActiveTintColor: "#4a7c59",
+                tabBarInactiveTintColor: "#9ca3af",
                 headerShown: true,
                 headerTitle: "EndoTracker",
                 headerTitleStyle: {
                     fontWeight: "bold",
-                    fontSize: 20,
+                    fontSize: 22,
+                    color: "#4a7c59",
+                },
+                headerStyle: {
+                    backgroundColor: "#ffffff",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 4,
                 },
                 headerRight: () => (
                     <Pressable
                         onPress={showUserMenu}
                         style={{
                             marginRight: 15,
-                            backgroundColor: "#2563eb",
+                            backgroundColor: "#4a7c59",
                             borderRadius: 20,
                             width: 40,
                             height: 40,
@@ -48,8 +57,25 @@ export default function TabLayout() {
                 ),
                 tabBarStyle: {
                     backgroundColor: "#ffffff",
-                    borderTopColor: "#e5e7eb",
-                    borderTopWidth: 1,
+                    height: 90,
+                    paddingBottom: 20,
+                    paddingTop: 10,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: -2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
+                    elevation: 8,
+                },
+                tabBarLabelStyle: {
+                    fontSize: 13,
+                    fontWeight: "600",
+                    marginTop: 4,
+                },
+                tabBarItemStyle: {
+                    paddingVertical: 4,
+                },
+                tabBarIconStyle: {
+                    marginBottom: 2,
                 },
             }}
         >
@@ -57,8 +83,12 @@ export default function TabLayout() {
                 name="index"
                 options={{
                     title: "Log Entry",
-                    tabBarIcon: ({ color, size }: { color: string; size: number }) => (
-                        <Ionicons name="add-circle-outline" size={size} color={color} />
+                    tabBarIcon: ({ color, size, focused }: { color: string; size: number; focused: boolean }) => (
+                        <Ionicons
+                            name={focused ? "add-circle" : "add-circle-outline"}
+                            size={focused ? size + 2 : size}
+                            color={color}
+                        />
                     ),
                 }}
             />
@@ -66,8 +96,12 @@ export default function TabLayout() {
                 name="history"
                 options={{
                     title: "History",
-                    tabBarIcon: ({ color, size }: { color: string; size: number }) => (
-                        <Ionicons name="time-outline" size={size} color={color} />
+                    tabBarIcon: ({ color, size, focused }: { color: string; size: number; focused: boolean }) => (
+                        <Ionicons
+                            name={focused ? "time" : "time-outline"}
+                            size={focused ? size + 2 : size}
+                            color={color}
+                        />
                     ),
                 }}
             />
@@ -75,8 +109,12 @@ export default function TabLayout() {
                 name="analytics"
                 options={{
                     title: "Analytics",
-                    tabBarIcon: ({ color, size }: { color: string; size: number }) => (
-                        <Ionicons name="analytics-outline" size={size} color={color} />
+                    tabBarIcon: ({ color, size, focused }: { color: string; size: number; focused: boolean }) => (
+                        <Ionicons
+                            name={focused ? "analytics" : "analytics-outline"}
+                            size={focused ? size + 2 : size}
+                            color={color}
+                        />
                     ),
                 }}
             />

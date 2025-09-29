@@ -83,7 +83,7 @@ export default function AnalyticsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f9fafb",
+        backgroundColor: "#4a7c59",
     },
     content: {
         padding: 20,

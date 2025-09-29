@@ -78,7 +78,7 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f9fafb",
+        backgroundColor: "#4a7c59",
     },
     header: {
         flexDirection: "row",
