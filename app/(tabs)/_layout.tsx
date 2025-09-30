@@ -1,7 +1,9 @@
-import { Tabs, useRouter } from "expo-router";
+import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, Alert } from "react-native";
+import { Pressable } from "react-native";
+import { useState } from "react";
 import { COLORS, SHADOWS, FONT_SIZES } from "../../constants/theme";
+import UserMenu from "../../components/user-menu";
 
 // Tab configuration
 const TAB_CONFIG = [
@@ -11,20 +13,10 @@ const TAB_CONFIG = [
 ] as const;
 
 export default function TabLayout() {
-    const router = useRouter();
+    const [menuVisible, setMenuVisible] = useState(false);
 
     const showUserMenu = () => {
-        Alert.alert(
-            "User Menu",
-            "Choose an option",
-            [
-                { text: "Settings", onPress: () => router.push("/settings") },
-                { text: "About", onPress: () => router.push("/about") },
-                { text: "Profile", onPress: () => Alert.alert("Profile", "Profile feature coming soon!") },
-                { text: "Sign Out", onPress: () => Alert.alert("Sign Out", "Sign out feature coming soon!") },
-                { text: "Cancel", style: "cancel" }
-            ]
-        );
+        setMenuVisible(true);
     };
 
     // Reusable tab icon component
@@ -41,68 +33,75 @@ export default function TabLayout() {
     };
 
     return (
-        <Tabs
-            screenOptions={{
-                tabBarActiveTintColor: COLORS.primary,
-                tabBarInactiveTintColor: COLORS.inactive,
-                headerShown: true,
-                headerTitle: "EndoTracker",
-                headerTitleStyle: {
-                    fontWeight: "bold",
-                    fontSize: FONT_SIZES.xxl,
-                    color: COLORS.primary,
-                },
-                headerStyle: {
-                    backgroundColor: COLORS.white,
-                    ...SHADOWS.small,
-                },
-                headerRight: () => (
-                    <Pressable
-                        onPress={showUserMenu}
-                        style={{
-                            marginRight: 15,
-                            backgroundColor: COLORS.primary,
-                            borderRadius: 20,
-                            width: 40,
-                            height: 40,
-                            justifyContent: "center",
-                            alignItems: "center"
+        <>
+            <Tabs
+                screenOptions={{
+                    tabBarActiveTintColor: COLORS.primary,
+                    tabBarInactiveTintColor: COLORS.inactive,
+                    headerShown: true,
+                    headerTitle: "EndoTracker",
+                    headerTitleStyle: {
+                        fontWeight: "bold",
+                        fontSize: FONT_SIZES.xxl,
+                        color: COLORS.primary,
+                    },
+                    headerStyle: {
+                        backgroundColor: COLORS.white,
+                        ...SHADOWS.small,
+                    },
+                    headerRight: () => (
+                        <Pressable
+                            onPress={showUserMenu}
+                            style={{
+                                marginRight: 15,
+                                backgroundColor: COLORS.primary,
+                                borderRadius: 20,
+                                width: 40,
+                                height: 40,
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }}
+                        >
+                            <Ionicons name="person" size={20} color={COLORS.white} />
+                        </Pressable>
+                    ),
+                    tabBarStyle: {
+                        backgroundColor: COLORS.white,
+                        height: 90,
+                        paddingBottom: 20,
+                        paddingTop: 10,
+                        ...SHADOWS.large,
+                        shadowOffset: { width: 0, height: -2 },
+                    },
+                    tabBarLabelStyle: {
+                        fontSize: 13,
+                        fontWeight: "600",
+                        marginTop: 4,
+                    },
+                    tabBarItemStyle: {
+                        paddingVertical: 4,
+                    },
+                    tabBarIconStyle: {
+                        marginBottom: 2,
+                    },
+                }}
+            >
+                {TAB_CONFIG.map((tab) => (
+                    <Tabs.Screen
+                        key={tab.name}
+                        name={tab.name}
+                        options={{
+                            title: tab.title,
+                            tabBarIcon: createTabIcon(tab.iconName),
                         }}
-                    >
-                        <Ionicons name="person" size={20} color={COLORS.white} />
-                    </Pressable>
-                ),
-                tabBarStyle: {
-                    backgroundColor: COLORS.white,
-                    height: 90,
-                    paddingBottom: 20,
-                    paddingTop: 10,
-                    ...SHADOWS.large,
-                    shadowOffset: { width: 0, height: -2 },
-                },
-                tabBarLabelStyle: {
-                    fontSize: 13,
-                    fontWeight: "600",
-                    marginTop: 4,
-                },
-                tabBarItemStyle: {
-                    paddingVertical: 4,
-                },
-                tabBarIconStyle: {
-                    marginBottom: 2,
-                },
-            }}
-        >
-            {TAB_CONFIG.map((tab) => (
-                <Tabs.Screen
-                    key={tab.name}
-                    name={tab.name}
-                    options={{
-                        title: tab.title,
-                        tabBarIcon: createTabIcon(tab.iconName),
-                    }}
-                />
-            ))}
-        </Tabs>
+                    />
+                ))}
+            </Tabs>
+
+            <UserMenu
+                visible={menuVisible}
+                onClose={() => setMenuVisible(false)}
+            />
+        </>
     );
 }
