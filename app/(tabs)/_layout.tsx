@@ -7,8 +7,8 @@ import UserMenu from "../../components/user-menu";
 
 // Tab configuration
 const TAB_CONFIG = [
-    { name: "index", title: "Log Entry", iconName: "add-circle" },
     { name: "history", title: "History", iconName: "time" },
+    { name: "index", title: "Log Entry", iconName: "add-circle" },
     { name: "analytics", title: "Analytics", iconName: "analytics" },
 ] as const;
 
@@ -35,11 +35,11 @@ export default function TabLayout() {
     return (
         <>
             <Tabs
-                screenOptions={{
+                screenOptions={({ route }) => ({
                     tabBarActiveTintColor: COLORS.primary,
                     tabBarInactiveTintColor: COLORS.inactive,
                     headerShown: true,
-                    headerTitle: "EndoTracker",
+                    headerTitle: TAB_CONFIG.find(tab => tab.name === route.name)?.title || route.name,
                     headerTitleStyle: {
                         fontWeight: "bold",
                         fontSize: FONT_SIZES.xxl,
@@ -84,7 +84,7 @@ export default function TabLayout() {
                     tabBarIconStyle: {
                         marginBottom: 2,
                     },
-                }}
+                })}
             >
                 {TAB_CONFIG.map((tab) => (
                     <Tabs.Screen

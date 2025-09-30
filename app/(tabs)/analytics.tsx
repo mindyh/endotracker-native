@@ -43,7 +43,6 @@ export default function AnalyticsScreen() {
     return (
         <ScrollView style={styles.container}>
             <View style={styles.content}>
-                <Text style={styles.title}>Analytics</Text>
 
                 <View style={styles.statsContainer}>
                     {renderStatCard("Average Pain Level", averagePainLevel.toFixed(1), "analytics-outline", COLORS.error)}
@@ -89,13 +88,7 @@ const styles = StyleSheet.create({
     content: {
         padding: SPACING.lg,
     },
-    title: {
-        fontSize: FONT_SIZES.xl,
-        fontWeight: FONT_WEIGHTS.bold,
-        marginBottom: SPACING.lg,
-        textAlign: "center",
-        color: COLORS.textPrimary,
-    },
+    // title style removed
     statsContainer: {
         marginBottom: SPACING.xl,
     },

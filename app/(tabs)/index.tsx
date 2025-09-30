@@ -23,7 +23,6 @@ export default function LogEntryScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Log New Entry</Text>
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Symptoms</Text>
@@ -81,13 +80,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.xl,
     ...SHADOWS.large,
   },
-  title: {
-    fontSize: FONT_SIZES.xxxxl,
-    fontWeight: "700",
-    marginBottom: SPACING.xl,
-    textAlign: "center",
-    color: COLORS.primaryDark,
-  },
+  // title style removed
   inputGroup: {
     marginBottom: SPACING.lg,
   },

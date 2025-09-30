@@ -44,7 +44,7 @@ export default function AboutScreen() {
                     </View>
                     <Text style={styles.appName}>EndoTracker</Text>
                     <Text style={styles.version}>Version 1.0.0</Text>
-                    <Text style={styles.tagline}>Your personal endometriosis companion</Text>
+                    <Text style={styles.tagline}>Your pain is real.</Text>
                 </View>
 
                 {renderInfoCard(

@@ -54,7 +54,6 @@ export default function HistoryScreen() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Symptom History</Text>
                 <TouchableOpacity style={styles.filterButton}>
                     <Ionicons name="filter-outline" size={20} color={COLORS.accent} />
                     <Text style={styles.filterButtonText}>Filter</Text>
@@ -90,11 +89,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: COLORS.neutral,
     },
-    title: {
-        fontSize: FONT_SIZES.xl,
-        fontWeight: FONT_WEIGHTS.bold,
-        color: COLORS.textPrimary,
-    },
+    // title style removed
     filterButton: {
         flexDirection: "row",
         alignItems: "center",
