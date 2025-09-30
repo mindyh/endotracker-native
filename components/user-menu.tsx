@@ -15,6 +15,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { COLORS, SHADOWS, SPACING, FONT_SIZES, FONT_WEIGHTS } from "../constants/theme";
+import { QUOTES } from "../constants/quotes";
 
 // Constants
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -61,6 +62,17 @@ interface UserMenuProps {
  */
 
 export default function UserMenu({ visible, onClose }: UserMenuProps) {
+
+
+    // Pick a quote based on the hour (changes once an hour)
+    const getQuoteOfHour = () => {
+        const now = new Date();
+        const hour = now.getHours();
+        // Rotate through QUOTES every hour
+        const idx = hour % QUOTES.length;
+        return QUOTES[idx];
+    };
+    const quote = getQuoteOfHour();
     const router = useRouter();
     const [slideAnim] = useState(new Animated.Value(SCREEN_WIDTH * DRAWER_WIDTH_RATIO));
     const [overlayOpacity] = useState(new Animated.Value(0));
@@ -244,6 +256,14 @@ export default function UserMenu({ visible, onClose }: UserMenuProps) {
                             <View style={styles.menuSection}>
                                 {menuOptions.map(renderMenuItem)}
                             </View>
+
+                            {/* Inspirational Quote at the bottom */}
+                            <View style={styles.quoteContainer}>
+                                <Text style={styles.quoteText}>
+                                    “{quote.text}”
+                                </Text>
+                                <Text style={styles.quoteAuthor}>~ {quote.author}</Text>
+                            </View>
                         </SafeAreaView>
                     </Pressable>
                 </Animated.View>
@@ -363,5 +383,25 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.neutral,
         marginVertical: SPACING.sm,
         marginHorizontal: SPACING.lg,
+    },
+    quoteContainer: {
+        paddingHorizontal: SPACING.xl,
+        paddingVertical: SPACING.xxl,
+        backgroundColor: COLORS.primaryBackground,
+        alignItems: 'flex-start',
+    },
+    quoteText: {
+        fontSize: FONT_SIZES.md,
+        fontStyle: 'italic',
+        color: COLORS.textTertiary,
+        textAlign: 'left',
+        marginBottom: SPACING.xs,
+    },
+    quoteAuthor: {
+        fontSize: FONT_SIZES.sm,
+        color: COLORS.gray400,
+        alignSelf: 'flex-end',
+        textAlign: 'left',
+        width: '100%',
     },
 });
