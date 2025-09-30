@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Switch, Alert } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS } from "../constants/theme";
 
 export default function SettingsScreen() {
@@ -10,6 +11,10 @@ export default function SettingsScreen() {
 
     const handleExportData = () => {
         Alert.alert("Export Data", "Your data has been exported successfully!");
+    };
+
+    const handleEventTypesSettings = () => {
+        router.push("/event-types-settings");
     };
 
     const renderSettingItem = (
@@ -61,6 +66,16 @@ export default function SettingsScreen() {
                             trackColor={{ false: COLORS.gray300, true: "#93c5fd" }}
                             thumbColor={dailyReminders ? COLORS.accent : COLORS.gray100}
                         />
+                    )}
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Customization</Text>
+                    {renderSettingItem(
+                        "Event Types",
+                        "Customize the types of events you can log",
+                        "options-outline",
+                        handleEventTypesSettings
                     )}
                 </View>
 

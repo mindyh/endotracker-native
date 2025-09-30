@@ -5,14 +5,9 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { COLORS, SHADOWS, SPACING, BORDER_RADIUS, FONT_SIZES } from "../../constants/theme";
 import Slider from '@react-native-community/slider';
 import { useEventHistory, LoggedEvent } from '../../contexts/EventHistoryContext';
+import { useEventTypes } from '../../contexts/EventTypesContext';
 
 // Types
-interface EventType {
-  key: string;
-  label: string;
-  emoji: string;
-}
-
 interface PainLocation {
   key: string;
   label: string;
@@ -23,16 +18,6 @@ interface PainLocation {
 
 
 // Constants
-const EVENT_TYPES: EventType[] = [
-  { key: 'pain-start', label: 'Pain Start', emoji: '⚡' },
-  { key: 'pain-ending', label: 'Pain End', emoji: '🕊️' },
-  { key: 'fatigue', label: 'Fatigue', emoji: '😴' },
-  { key: 'treatment', label: 'Treatment', emoji: '🩹' },
-  { key: 'food', label: 'Food', emoji: '🍎' },
-  { key: 'water', label: 'Water', emoji: '💧' },
-  { key: 'supplements', label: 'Supplements', emoji: '💊' },
-];
-
 const PAIN_LOCATIONS: PainLocation[] = [
   { key: 'pelvis', label: 'Pelvis' },
   { key: 'left-hip', label: 'Left Hip' },
@@ -83,6 +68,10 @@ const formatHistoryTimestamp = (date: Date): string => {
 };
 
 export default function LogEventScreen() {
+  // Context
+  const { eventHistory, addEvent } = useEventHistory();
+  const { eventTypes } = useEventTypes();
+
   // State
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedPainLevel, setSelectedPainLevel] = useState<number>(DEFAULT_PAIN_LEVEL);
@@ -91,7 +80,6 @@ export default function LogEventScreen() {
   const [timestamp, setTimestamp] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const { eventHistory, addEvent } = useEventHistory();
 
   // Event handlers
   const resetForm = useCallback(() => {
@@ -120,7 +108,7 @@ export default function LogEventScreen() {
     }
 
     // Find the selected event type details
-    const eventType = EVENT_TYPES.find(type => type.key === selectedType);
+    const eventType = eventTypes.find(type => type.key === selectedType);
     if (!eventType) return;
 
     // Create the logged event
@@ -140,7 +128,7 @@ export default function LogEventScreen() {
     const timestampString = formatTimestamp(timestamp);
     Alert.alert("Success", `${eventType.label} logged at ${timestampString}!`);
     resetForm();
-  }, [selectedType, selectedPainLevel, selectedPainLocations, notes, timestamp, resetForm, addEvent]);
+  }, [selectedType, selectedPainLevel, selectedPainLocations, notes, timestamp, resetForm, addEvent, eventTypes]);
 
   // Date/Time handlers
   const handleDateEdit = useCallback(() => {
@@ -187,7 +175,7 @@ export default function LogEventScreen() {
           <View style={styles.inputGroup}>
             <Text style={styles.label}>What happened?</Text>
             <View style={styles.typeChipsContainer}>
-              {EVENT_TYPES.map((type) => {
+              {eventTypes.map((type) => {
                 const selected = selectedType === type.key;
                 return (
                   <TouchableOpacity
