@@ -12,12 +12,12 @@ interface EventType {
   emoji: string;
 }
 
-interface QuickLogEvent {
-  type: string;
-  painLevel: string;
-  emoji: string;
-  color: string;
+interface PainLocation {
+  key: string;
+  label: string;
 }
+
+
 
 // Constants
 const EVENT_TYPES: EventType[] = [
@@ -25,12 +25,22 @@ const EVENT_TYPES: EventType[] = [
   { key: 'pain-ending', label: 'Pain End', emoji: '🕊️' },
   { key: 'fatigue', label: 'Fatigue', emoji: '😴' },
   { key: 'treatment', label: 'Treatment', emoji: '🩹' },
+  { key: 'food', label: 'Food', emoji: '🍎' },
+  { key: 'water', label: 'Water', emoji: '💧' },
+  { key: 'supplements', label: 'Supplements', emoji: '💊' },
 ];
 
-const QUICK_LOG_EVENTS: QuickLogEvent[] = [
-  { type: 'Pain Start', painLevel: '7', emoji: '⚡', color: COLORS.error },
-  { type: 'Pain End', painLevel: '2', emoji: '🕊️', color: COLORS.success },
+const PAIN_LOCATIONS: PainLocation[] = [
+  { key: 'pelvis', label: 'Pelvis' },
+  { key: 'left-hip', label: 'Left Hip' },
+  { key: 'right-hip', label: 'Right Hip' },
+  { key: 'left-leg', label: 'Left Leg' },
+  { key: 'right-leg', label: 'Right Leg' },
+  { key: 'lower-back', label: 'Lower Back' },
+  { key: 'rectum', label: 'Rectum' },
 ];
+
+
 
 const DEFAULT_PAIN_LEVEL = 1;
 const MAX_NOTE_LENGTH = 100;
@@ -55,6 +65,7 @@ export default function LogEventScreen() {
   // State
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [selectedPainLevel, setSelectedPainLevel] = useState<number>(DEFAULT_PAIN_LEVEL);
+  const [selectedPainLocations, setSelectedPainLocations] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
   const [timestamp, setTimestamp] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -64,16 +75,21 @@ export default function LogEventScreen() {
   const resetForm = useCallback(() => {
     setSelectedType(null);
     setSelectedPainLevel(DEFAULT_PAIN_LEVEL);
+    setSelectedPainLocations([]);
     setNotes("");
     setTimestamp(new Date());
   }, []);
 
-  const handleQuickLog = useCallback((type: string, painLevel?: string) => {
-    const finalPainLevel = painLevel || selectedPainLevel.toString();
-    const timestampString = formatTimestamp(timestamp);
-    Alert.alert("Success", `${type} event logged with pain level ${finalPainLevel} at ${timestampString}!`);
-    resetForm();
-  }, [selectedPainLevel, timestamp, resetForm]);
+  // Pain location handler
+  const togglePainLocation = useCallback((locationKey: string) => {
+    setSelectedPainLocations(prev =>
+      prev.includes(locationKey)
+        ? prev.filter(key => key !== locationKey)
+        : [...prev, locationKey]
+    );
+  }, []);
+
+
 
   const handleFullSubmit = useCallback(() => {
     if (!selectedType) {
@@ -127,50 +143,7 @@ export default function LogEventScreen() {
       <ScrollView style={styles.container}>
         <View style={styles.content}>
 
-          {/* Quick Log Buttons - One tap to log common events */}
-          <View style={styles.quickLogSection}>
-            <Text style={styles.sectionTitle}>Quick Log</Text>
-            <View style={styles.quickButtonsRow}>
-              {QUICK_LOG_EVENTS.map((event) => (
-                <TouchableOpacity
-                  key={event.type}
-                  style={[styles.quickButton, { backgroundColor: event.color }]}
-                  onPress={() => handleQuickLog(event.type, event.painLevel)}
-                >
-                  <Text style={styles.quickButtonEmoji}>{event.emoji}</Text>
-                  <Text style={styles.quickButtonText}>{event.type}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          {/* Pain Level Slider */}
-          <View style={styles.inputGroup}>
-            <View style={styles.painLevelHeader}>
-              <Text style={styles.label}>Pain Level: {selectedPainLevel}/10</Text>
-              <Text style={styles.painLevelEmoji}>
-                {getPainLevelEmoji(selectedPainLevel)}
-              </Text>
-            </View>
-            {/* Easy-to-target slider */}
-            <View style={styles.sliderContainer}>
-              <Text style={styles.sliderLabel}>1</Text>
-              <Slider
-                style={styles.slider}
-                minimumValue={1}
-                maximumValue={10}
-                step={1}
-                value={selectedPainLevel || DEFAULT_PAIN_LEVEL}
-                onValueChange={handlePainLevelChange}
-                minimumTrackTintColor={COLORS.primary}
-                maximumTrackTintColor={COLORS.primaryLight}
-                thumbTintColor={COLORS.primary}
-              />
-              <Text style={styles.sliderLabel}>10</Text>
-            </View>
-          </View>
-
-          {/* Event Type - Simplified */}
+          {/* Event Type Selection - First Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>What happened?</Text>
             <View style={styles.typeChipsContainer}>
@@ -182,14 +155,66 @@ export default function LogEventScreen() {
                     style={[styles.typeChip, selected && styles.typeChipSelected]}
                     onPress={() => setSelectedType(prev => prev === type.key ? null : type.key)}
                   >
+                    <Text style={styles.typeChipEmoji}>{type.emoji}</Text>
                     <Text style={[styles.typeChipText, selected && styles.typeChipTextSelected]}>
-                      {type.emoji} {type.label}
+                      {type.label}
                     </Text>
                   </TouchableOpacity>
                 );
               })}
             </View>
           </View>
+
+          {/* Pain Level Slider - Only show for Pain Start */}
+          {selectedType === 'pain-start' && (
+            <View style={styles.inputGroup}>
+              <View style={styles.painLevelHeader}>
+                <Text style={styles.label}>Pain Level: {selectedPainLevel}/10</Text>
+                <Text style={styles.painLevelEmoji}>
+                  {getPainLevelEmoji(selectedPainLevel)}
+                </Text>
+              </View>
+              {/* Easy-to-target slider */}
+              <View style={styles.sliderContainer}>
+                <Text style={styles.sliderLabel}>1</Text>
+                <Slider
+                  style={styles.slider}
+                  minimumValue={1}
+                  maximumValue={10}
+                  step={1}
+                  value={selectedPainLevel || DEFAULT_PAIN_LEVEL}
+                  onValueChange={handlePainLevelChange}
+                  minimumTrackTintColor={COLORS.primary}
+                  maximumTrackTintColor={COLORS.primaryLight}
+                  thumbTintColor={COLORS.primary}
+                />
+                <Text style={styles.sliderLabel}>10</Text>
+              </View>
+            </View>
+          )}
+
+          {/* Pain Location - Only show for Pain Start */}
+          {selectedType === 'pain-start' && (
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Where does it hurt?</Text>
+              <View style={styles.locationChipsContainer}>
+                {PAIN_LOCATIONS.map((location) => {
+                  const selected = selectedPainLocations.includes(location.key);
+                  return (
+                    <TouchableOpacity
+                      key={location.key}
+                      style={[styles.locationChip, selected && styles.locationChipSelected]}
+                      onPress={() => togglePainLocation(location.key)}
+                    >
+                      <Text style={[styles.locationChipText, selected && styles.locationChipTextSelected]}>
+                        {location.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+          )}
 
           {/* Optional Notes - Minimal */}
           <View style={styles.inputGroup}>
@@ -333,61 +358,70 @@ const styles = StyleSheet.create({
   typeChipsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 4,
+    justifyContent: 'space-between',
+    gap: SPACING.sm,
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   typeChip: {
     backgroundColor: COLORS.primaryLight,
-    borderRadius: BORDER_RADIUS.md,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    marginRight: 8,
-    marginBottom: 8,
-    borderWidth: 1.5,
+    borderRadius: BORDER_RADIUS.lg,
+    flex: 1,
+    minWidth: 100,
+    minHeight: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
     borderColor: COLORS.primaryLight,
+    padding: SPACING.lg,
+    ...SHADOWS.small,
   },
   typeChipSelected: {
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
   },
+  typeChipEmoji: {
+    fontSize: 32,
+    marginBottom: SPACING.xs,
+  },
   typeChipText: {
     color: COLORS.primaryDark,
-    fontSize: FONT_SIZES.md,
-    fontWeight: '500',
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+    textAlign: 'center',
+    lineHeight: 16,
   },
   typeChipTextSelected: {
     color: COLORS.white,
   },
 
-  // Quick Log Section
-  quickLogSection: {
-    marginBottom: SPACING.xl,
-    paddingBottom: SPACING.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.neutral,
-  },
-  quickButtonsRow: {
+  // Pain Location Chips
+  locationChipsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: SPACING.md,
+    flexWrap: 'wrap',
+    gap: SPACING.sm,
+    marginTop: SPACING.sm,
   },
-  quickButton: {
-    flex: 1,
-    padding: SPACING.lg,
-    borderRadius: BORDER_RADIUS.lg,
-    alignItems: 'center',
-    minHeight: 80,
-    justifyContent: 'center',
-    ...SHADOWS.medium,
-  },
-  quickButtonEmoji: {
-    fontSize: 32,
+  locationChip: {
+    backgroundColor: COLORS.primaryLight,
+    borderRadius: BORDER_RADIUS.md,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    borderWidth: 1.5,
+    borderColor: COLORS.primaryLight,
     marginBottom: SPACING.xs,
   },
-  quickButtonText: {
+  locationChipSelected: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  locationChipText: {
+    color: COLORS.primaryDark,
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+  },
+  locationChipTextSelected: {
     color: COLORS.white,
-    fontSize: FONT_SIZES.md,
-    fontWeight: "600",
   },
 
   // Pain Level Slider

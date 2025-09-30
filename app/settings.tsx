@@ -12,21 +12,6 @@ export default function SettingsScreen() {
         Alert.alert("Export Data", "Your data has been exported successfully!");
     };
 
-    const handleClearData = () => {
-        Alert.alert(
-            "Clear All Data",
-            "Are you sure you want to clear all your data? This action cannot be undone.",
-            [
-                { text: "Cancel", style: "cancel" },
-                {
-                    text: "Clear", style: "destructive", onPress: () => {
-                        Alert.alert("Success", "All data has been cleared.");
-                    }
-                }
-            ]
-        );
-    };
-
     const renderSettingItem = (
         title: string,
         subtitle: string,
