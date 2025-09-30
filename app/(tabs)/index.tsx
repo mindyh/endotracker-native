@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { COLORS, SHADOWS, SPACING, BORDER_RADIUS, FONT_SIZES } from "../../constants/theme";
 import Slider from '@react-native-community/slider';
+import { useEventHistory, LoggedEvent } from '../../contexts/EventHistoryContext';
 
 // Types
 interface EventType {
@@ -16,6 +17,8 @@ interface PainLocation {
   key: string;
   label: string;
 }
+
+
 
 
 
@@ -61,6 +64,24 @@ const validatePainLevel = (value: number | null | undefined): number => {
   return (value && value >= 1 && value <= 10) ? Math.round(value) : DEFAULT_PAIN_LEVEL;
 };
 
+const formatPainLocations = (locationKeys: string[]): string => {
+  return locationKeys
+    .map(key => PAIN_LOCATIONS.find(loc => loc.key === key)?.label)
+    .filter(Boolean)
+    .join(', ');
+};
+
+const formatHistoryTimestamp = (date: Date): string => {
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+
+  if (isToday) {
+    return `Today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  } else {
+    return `${date.toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  }
+};
+
 export default function LogEventScreen() {
   // State
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -70,6 +91,7 @@ export default function LogEventScreen() {
   const [timestamp, setTimestamp] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const { eventHistory, addEvent } = useEventHistory();
 
   // Event handlers
   const resetForm = useCallback(() => {
@@ -96,11 +118,29 @@ export default function LogEventScreen() {
       Alert.alert("Error", "Please select an event type");
       return;
     }
-    const finalPainLevel = selectedPainLevel.toString();
+
+    // Find the selected event type details
+    const eventType = EVENT_TYPES.find(type => type.key === selectedType);
+    if (!eventType) return;
+
+    // Create the logged event
+    const loggedEvent: LoggedEvent = {
+      id: Date.now().toString(),
+      type: eventType.label,
+      emoji: eventType.emoji,
+      painLevel: selectedType === 'pain-start' ? selectedPainLevel : undefined,
+      painLocations: selectedType === 'pain-start' && selectedPainLocations.length > 0 ? selectedPainLocations : undefined,
+      notes: notes.trim() || undefined,
+      timestamp: new Date(timestamp)
+    };
+
+    // Add to history
+    addEvent(loggedEvent);
+
     const timestampString = formatTimestamp(timestamp);
-    Alert.alert("Success", `Event logged with pain level ${finalPainLevel} at ${timestampString}!`);
+    Alert.alert("Success", `${eventType.label} logged at ${timestampString}!`);
     resetForm();
-  }, [selectedType, selectedPainLevel, timestamp, resetForm]);
+  }, [selectedType, selectedPainLevel, selectedPainLocations, notes, timestamp, resetForm, addEvent]);
 
   // Date/Time handlers
   const handleDateEdit = useCallback(() => {
@@ -259,7 +299,41 @@ export default function LogEventScreen() {
             <Ionicons name="add-circle" size={32} color="white" />
             <Text style={styles.submitButtonText}>Log Event</Text>
           </TouchableOpacity>
+
         </View>
+
+        {/* Recent Events Card */}
+        {eventHistory.length > 0 && (
+          <View style={styles.recentEventsCard}>
+            <Text style={styles.recentEventsTitle}>Recent Events</Text>
+            {eventHistory.slice(0, 3).map((event) => (
+              <View key={event.id} style={styles.recentEventItem}>
+                <View style={styles.recentEventHeader}>
+                  <Text style={styles.recentEventEmoji}>{event.emoji}</Text>
+                  <Text style={styles.recentEventType}>{event.type}</Text>
+                  <Text style={styles.recentEventTime}>
+                    {formatHistoryTimestamp(event.timestamp)}
+                  </Text>
+                </View>
+                {event.painLevel && (
+                  <Text style={styles.recentEventDetail}>
+                    Pain Level: {event.painLevel}/10
+                  </Text>
+                )}
+                {event.painLocations && event.painLocations.length > 0 && (
+                  <Text style={styles.recentEventDetail}>
+                    Locations: {formatPainLocations(event.painLocations)}
+                  </Text>
+                )}
+                {event.notes && (
+                  <Text style={styles.recentEventDetail}>
+                    Note: {event.notes}
+                  </Text>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
 
       {/* Date Picker */}
@@ -490,5 +564,56 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.sm,
     color: COLORS.textTertiary,
     fontStyle: 'italic',
+  },
+
+  // Recent Events Card Styles
+  recentEventsCard: {
+    margin: SPACING.lg,
+    marginTop: 0, // No top margin since it's in ScrollView
+    padding: SPACING.xl,
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.xl,
+    ...SHADOWS.large,
+  },
+  recentEventsTitle: {
+    fontSize: FONT_SIZES.lg,
+    fontWeight: '700',
+    color: COLORS.primaryDark,
+    marginBottom: SPACING.md,
+    textAlign: 'center',
+  },
+  recentEventItem: {
+    backgroundColor: COLORS.primaryBackground,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.md,
+    marginBottom: SPACING.sm,
+    borderWidth: 1,
+    borderColor: COLORS.primaryLight,
+  },
+  recentEventHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.xs,
+  },
+  recentEventEmoji: {
+    fontSize: 18,
+    marginRight: SPACING.sm,
+  },
+  recentEventType: {
+    fontSize: FONT_SIZES.sm,
+    fontWeight: '600',
+    color: COLORS.primaryDark,
+    flex: 1,
+  },
+  recentEventTime: {
+    fontSize: FONT_SIZES.xs,
+    color: COLORS.textSecondary,
+    fontStyle: 'italic',
+  },
+  recentEventDetail: {
+    fontSize: FONT_SIZES.xs,
+    color: COLORS.textSecondary,
+    marginLeft: 30, // Align with text after emoji
+    lineHeight: 16,
   },
 });
