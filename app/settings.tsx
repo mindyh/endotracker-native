@@ -80,7 +80,7 @@ export default function SettingsScreen() {
                 </View>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Data & Privacy</Text>
+                    <Text style={styles.sectionTitle}>Data</Text>
                     {renderSettingItem(
                         "Cloud Sync",
                         "Sync your data across devices",
@@ -99,48 +99,6 @@ export default function SettingsScreen() {
                         "download-outline",
                         handleExportData
                     )}
-                    {renderSettingItem(
-                        "Privacy Policy",
-                        "Read our privacy policy",
-                        "shield-checkmark-outline",
-                        () => Alert.alert("Privacy Policy", "Privacy policy would open here")
-                    )}
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>App</Text>
-                    {renderSettingItem(
-                        "Theme",
-                        "Light theme",
-                        "color-palette-outline",
-                        () => Alert.alert("Theme", "Theme selection would open here")
-                    )}
-                    {renderSettingItem(
-                        "Language",
-                        "English",
-                        "language-outline",
-                        () => Alert.alert("Language", "Language selection would open here")
-                    )}
-                    {renderSettingItem(
-                        "Help & Support",
-                        "Get help and contact support",
-                        "help-circle-outline",
-                        () => Alert.alert("Help", "Help center would open here")
-                    )}
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Danger Zone</Text>
-                    <TouchableOpacity style={styles.dangerItem} onPress={handleClearData}>
-                        <View style={styles.settingLeft}>
-                            <Ionicons name="trash-outline" size={24} color={COLORS.error} />
-                            <View style={styles.settingText}>
-                                <Text style={[styles.settingTitle, { color: COLORS.error }]}>Clear All Data</Text>
-                                <Text style={styles.settingSubtitle}>Permanently delete all your data</Text>
-                            </View>
-                        </View>
-                        <Ionicons name="chevron-forward" size={20} color={COLORS.textTertiary} />
-                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.versionInfo}>

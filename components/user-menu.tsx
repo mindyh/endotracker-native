@@ -142,12 +142,6 @@ export default function UserMenu({ visible, onClose }: UserMenuProps) {
             onPress: createMenuAction(() => router.push("/about")),
         },
         {
-            id: "privacy",
-            title: "Privacy & Security",
-            icon: "shield-checkmark-outline",
-            onPress: createMenuAction(() => console.log("Privacy clicked")),
-        },
-        {
             id: "help",
             title: "Help & Support",
             icon: "help-circle-outline",

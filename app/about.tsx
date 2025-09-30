@@ -66,35 +66,7 @@ export default function AboutScreen() {
                 )}
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Resources</Text>
-                    {renderLinkItem(
-                        "Endometriosis Foundation",
-                        "Learn more about endometriosis",
-                        "library-outline",
-                        "https://www.endofound.org"
-                    )}
-                    {renderLinkItem(
-                        "Medical Resources",
-                        "Find healthcare providers",
-                        "medical-outline",
-                        "https://www.endometriosis.org"
-                    )}
-                    {renderLinkItem(
-                        "Support Community",
-                        "Connect with others",
-                        "people-outline",
-                        "https://www.reddit.com/r/endometriosis"
-                    )}
-                </View>
-
-                <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Contact & Support</Text>
-                    {renderLinkItem(
-                        "Contact Support",
-                        "Get help with the app",
-                        "mail-outline",
-                        "mailto:support@endotracker.com"
-                    )}
                     {renderLinkItem(
                         "Feature Requests",
                         "Suggest new features",
