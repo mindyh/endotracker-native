@@ -2,19 +2,21 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from "react-nati
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS } from "../../constants/theme";
 
-interface HistoryEntry {
+interface HistoryEvent {
     id: string;
     date: string;
+    timestamp: string;
     symptoms: string;
     painLevel: number;
     notes?: string;
 }
 
 // Mock data for demonstration
-const mockHistory: HistoryEntry[] = [
+const mockHistory: HistoryEvent[] = [
     {
         id: "1",
         date: "2024-09-29",
+        timestamp: "9/29/2024, 2:15:30 PM",
         symptoms: "Abdominal pain, bloating",
         painLevel: 7,
         notes: "Pain was worse in the morning"
@@ -22,6 +24,7 @@ const mockHistory: HistoryEntry[] = [
     {
         id: "2",
         date: "2024-09-28",
+        timestamp: "9/28/2024, 10:45:00 AM",
         symptoms: "Mild cramping",
         painLevel: 4,
         notes: "Manageable with rest"
@@ -29,6 +32,7 @@ const mockHistory: HistoryEntry[] = [
     {
         id: "3",
         date: "2024-09-27",
+        timestamp: "9/27/2024, 8:30:15 PM",
         symptoms: "Severe pelvic pain",
         painLevel: 9,
         notes: "Required medication"
@@ -36,10 +40,13 @@ const mockHistory: HistoryEntry[] = [
 ];
 
 export default function HistoryScreen() {
-    const renderHistoryItem = (item: HistoryEntry) => (
+    const renderHistoryItem = (item: HistoryEvent) => (
         <View key={item.id} style={styles.historyItem}>
             <View style={styles.historyHeader}>
-                <Text style={styles.dateText}>{new Date(item.date).toLocaleDateString()}</Text>
+                <View style={styles.dateTimeContainer}>
+                    <Text style={styles.dateText}>{new Date(item.date).toLocaleDateString()}</Text>
+                    <Text style={styles.timestampText}>{item.timestamp}</Text>
+                </View>
                 <View style={styles.painLevelBadge}>
                     <Text style={styles.painLevelText}>{item.painLevel}/10</Text>
                 </View>
@@ -165,5 +172,13 @@ const styles = StyleSheet.create({
         color: COLORS.textTertiary,
         textAlign: "center",
         maxWidth: 240,
+    },
+    dateTimeContainer: {
+        flex: 1,
+    },
+    timestampText: {
+        fontSize: FONT_SIZES.xs,
+        color: COLORS.textTertiary,
+        marginTop: 2,
     },
 });

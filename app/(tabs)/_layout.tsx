@@ -8,7 +8,7 @@ import UserMenu from "../../components/user-menu";
 // Tab configuration
 const TAB_CONFIG = [
     { name: "history", title: "History", iconName: "time" },
-    { name: "index", title: "Log Entry", iconName: "add-circle" },
+    { name: "index", title: "Log Event", iconName: "add-circle" },
     { name: "analytics", title: "Analytics", iconName: "analytics" },
 ] as const;
 

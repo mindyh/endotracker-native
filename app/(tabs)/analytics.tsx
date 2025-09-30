@@ -7,7 +7,7 @@ const { width } = Dimensions.get("window");
 export default function AnalyticsScreen() {
     // Mock data for analytics
     const averagePainLevel = 6.3;
-    const totalEntries = 12;
+    const totalEvents = 12;
     const symptomFrequency = [
         { symptom: "Abdominal pain", count: 8 },
         { symptom: "Bloating", count: 6 },
@@ -46,8 +46,8 @@ export default function AnalyticsScreen() {
 
                 <View style={styles.statsContainer}>
                     {renderStatCard("Average Pain Level", averagePainLevel.toFixed(1), "analytics-outline", COLORS.error)}
-                    {renderStatCard("Total Entries", totalEntries, "document-text-outline", COLORS.accent)}
-                    {renderStatCard("This Week", "3 entries", "calendar-outline", COLORS.success)}
+                    {renderStatCard("Total Events", totalEvents, "document-text-outline", COLORS.accent)}
+                    {renderStatCard("This Week", "3 events", "calendar-outline", COLORS.success)}
                     {renderStatCard("Trend", "Improving", "trending-up-outline", COLORS.warning)}
                 </View>
 
