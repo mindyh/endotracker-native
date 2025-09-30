@@ -1,46 +1,55 @@
 // Centralized theme constants for EndoTracker
+// Base palette
+const PALETTE = {
+    lightest: "#F1F2EB",
+    light: "#D8DAD3",
+    green: "#A4C2A5",
+    darkGreen: "#566246",
+    dark: "#4A4A48",
+};
+
 export const COLORS = {
     // Primary brand colors
-    primary: "#4a7c59",
-    primaryDark: "#2d5a3d",
-    primaryLight: "#a3d5b7",
-    primaryBackground: "#f8fdf9",
+    primary: PALETTE.darkGreen,
+    primaryDark: PALETTE.dark,
+    primaryLight: PALETTE.green,
+    primaryBackground: PALETTE.lightest,
 
     // Neutral colors
-    white: "#ffffff",
-    black: "#000000",
+    white: PALETTE.lightest,
+    black: PALETTE.dark,
 
-    // Gray scale
-    gray50: "#f9fafb",
-    gray100: "#f3f4f6",
-    gray200: "#e5e7eb",
-    gray300: "#d1d5db",
-    gray400: "#9ca3af",
-    gray500: "#6b7280",
-    gray600: "#4b5563",
-    gray700: "#374151",
-    gray800: "#1f2937",
-    gray900: "#111827",
+    // Gray scale (mapped to palette for consistency)
+    gray50: PALETTE.lightest,
+    gray100: PALETTE.light,
+    gray200: PALETTE.light,
+    gray300: PALETTE.green,
+    gray400: PALETTE.green,
+    gray500: PALETTE.darkGreen,
+    gray600: PALETTE.darkGreen,
+    gray700: PALETTE.dark,
+    gray800: PALETTE.dark,
+    gray900: PALETTE.dark,
 
-    // Status colors
-    success: "#059669",
-    warning: "#f59e0b",
-    error: "#ef4444",
-    info: "#2563eb",
+    // Status colors (unchanged, but could be added to palette if desired)
+    success: "#5ca98e",   // Softer green, blends with background
+    warning: "#e6b86a",   // Muted gold, less saturated
+    error: "#e57373",     // Soft red, less harsh
+    info: "#5b8fd6",      // Muted blue, less vibrant
 
     // Background colors
-    background: "#4a7c59",
-    surface: "#ffffff",
-    inactive: "#9ca3af",
+    background: PALETTE.green,
+    surface: PALETTE.lightest,
+    inactive: PALETTE.darkGreen,
 
     // Semantic colors
-    neutral: "#e5e7eb",
-    accent: "#2563eb",
+    neutral: PALETTE.light,
+    accent: PALETTE.darkGreen,
 
     // Text colors
-    textPrimary: "#1f2937",
-    textSecondary: "#374151",
-    textTertiary: "#9ca3af",
+    textPrimary: PALETTE.dark,
+    textSecondary: PALETTE.darkGreen,
+    textTertiary: PALETTE.green,
 } as const;
 
 export const SHADOWS = {
