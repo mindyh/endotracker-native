@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { COLORS, SHADOWS, SPACING, BORDER_RADIUS, FONT_SIZES } from "../../constants/theme";
+import Slider from '@react-native-community/slider';
 
 
 export default function LogEventScreen() {
@@ -13,28 +14,20 @@ export default function LogEventScreen() {
     { key: 'treatment', label: 'Treatment', emoji: '🩹' },
   ];
 
-  const PAIN_LEVELS = [
-    { value: '1', label: 'Mild', emoji: '😊', color: COLORS.success },
-    { value: '3', label: 'Moderate', emoji: '�', color: COLORS.warning },
-    { value: '5', label: 'Strong', emoji: '😣', color: COLORS.error },
-    { value: '7', label: 'Severe', emoji: '😰', color: '#ff6b6b' },
-    { value: '9', label: 'Extreme', emoji: '�', color: '#d63031' },
-  ];
-
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [selectedPainLevel, setSelectedPainLevel] = useState<string | null>(null);
+  const [selectedPainLevel, setSelectedPainLevel] = useState<number>(1);
   const [notes, setNotes] = useState("");
   const [timestamp, setTimestamp] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
   const handleQuickLog = (type: string, painLevel?: string) => {
-    const finalPainLevel = painLevel || selectedPainLevel || '5';
+    const finalPainLevel = painLevel || selectedPainLevel;
     const timestampString = `${timestamp.toLocaleDateString()} at ${timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     Alert.alert("Success", `${type} event logged with pain level ${finalPainLevel} at ${timestampString}!`);
     // Reset form
     setSelectedType(null);
-    setSelectedPainLevel(null);
+    setSelectedPainLevel(1);
     setNotes("");
     setTimestamp(new Date());
   };
@@ -44,12 +37,12 @@ export default function LogEventScreen() {
       Alert.alert("Error", "Please select an event type");
       return;
     }
-    const finalPainLevel = selectedPainLevel || '5';
+    const finalPainLevel = selectedPainLevel.toString();
     const timestampString = `${timestamp.toLocaleDateString()} at ${timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     Alert.alert("Success", `Event logged with pain level ${finalPainLevel} at ${timestampString}!`);
     // Reset form
     setSelectedType(null);
-    setSelectedPainLevel(null);
+    setSelectedPainLevel(1);
     setNotes("");
     setTimestamp(new Date());
   };
@@ -111,32 +104,31 @@ export default function LogEventScreen() {
             </View>
           </View>
 
-          {/* Pain Level Selector */}
+          {/* Pain Level Slider */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>How do you feel? (Tap one)</Text>
-            <View style={styles.painLevelContainer}>
-              {PAIN_LEVELS.map((level) => {
-                const selected = selectedPainLevel === level.value;
-                return (
-                  <TouchableOpacity
-                    key={level.value}
-                    style={[
-                      styles.painLevelButton,
-                      { backgroundColor: selected ? level.color : COLORS.primaryLight },
-                      selected && styles.painLevelSelected
-                    ]}
-                    onPress={() => setSelectedPainLevel(level.value)}
-                  >
-                    <Text style={styles.painLevelEmoji}>{level.emoji}</Text>
-                    <Text style={[
-                      styles.painLevelText,
-                      { color: selected ? COLORS.white : COLORS.textPrimary }
-                    ]}>
-                      {level.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+            <View style={styles.painLevelHeader}>
+              <Text style={styles.label}>Pain Level: {selectedPainLevel}/10</Text>
+              <Text style={styles.painLevelEmoji}>
+                {selectedPainLevel <= 3 ? '😊' :
+                  selectedPainLevel <= 6 ? '😐' :
+                    selectedPainLevel <= 8 ? '😣' : '😰'}
+              </Text>
+            </View>
+            {/* Easy-to-target slider */}
+            <View style={styles.sliderContainer}>
+              <Text style={styles.sliderLabel}>1</Text>
+              <Slider
+                style={styles.slider}
+                minimumValue={1}
+                maximumValue={10}
+                step={1}
+                value={selectedPainLevel || 1}
+                onValueChange={(value) => setSelectedPainLevel(value && value >= 1 && value <= 10 ? Math.round(value) : 1)}
+                minimumTrackTintColor={COLORS.primary}
+                maximumTrackTintColor={COLORS.primaryLight}
+                thumbTintColor={COLORS.primary}
+              />
+              <Text style={styles.sliderLabel}>10</Text>
             </View>
           </View>
 
@@ -350,34 +342,38 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  // Pain Level Selector
-  painLevelContainer: {
+  // Pain Level Slider
+  painLevelHeader: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
-  painLevelButton: {
-    flex: 1,
-    minWidth: '18%',
-    aspectRatio: 1,
-    borderRadius: BORDER_RADIUS.md,
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: SPACING.xs,
-    ...SHADOWS.small,
-  },
-  painLevelSelected: {
-    ...SHADOWS.medium,
-    transform: [{ scale: 1.05 }],
+    justifyContent: 'space-between',
+    marginBottom: SPACING.sm,
   },
   painLevelEmoji: {
-    fontSize: 20,
-    marginBottom: 2,
+    fontSize: 24,
+    marginLeft: SPACING.sm,
   },
-  painLevelText: {
-    fontSize: FONT_SIZES.xs,
-    fontWeight: "600",
+  sliderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: SPACING.lg,
+  },
+  slider: {
+    flex: 1,
+    height: 0,
+  },
+  currentValueDisplay: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+    textAlign: 'center',
+    marginTop: SPACING.sm,
+  },
+  sliderLabel: {
+    fontSize: FONT_SIZES.xl,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+    minWidth: 35,
     textAlign: 'center',
   },
 
