@@ -1,61 +1,101 @@
 import { StyleSheet, Text, View, ScrollView, TextInput, TouchableOpacity, Alert, Platform } from "react-native";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { COLORS, SHADOWS, SPACING, BORDER_RADIUS, FONT_SIZES } from "../../constants/theme";
 import Slider from '@react-native-community/slider';
 
+// Types
+interface EventType {
+  key: string;
+  label: string;
+  emoji: string;
+}
+
+interface QuickLogEvent {
+  type: string;
+  painLevel: string;
+  emoji: string;
+  color: string;
+}
+
+// Constants
+const EVENT_TYPES: EventType[] = [
+  { key: 'pain-start', label: 'Pain Start', emoji: '⚡' },
+  { key: 'pain-ending', label: 'Pain End', emoji: '🕊️' },
+  { key: 'fatigue', label: 'Fatigue', emoji: '😴' },
+  { key: 'treatment', label: 'Treatment', emoji: '🩹' },
+];
+
+const QUICK_LOG_EVENTS: QuickLogEvent[] = [
+  { type: 'Pain Start', painLevel: '7', emoji: '⚡', color: COLORS.error },
+  { type: 'Pain End', painLevel: '2', emoji: '🕊️', color: COLORS.success },
+];
+
+const DEFAULT_PAIN_LEVEL = 1;
+const MAX_NOTE_LENGTH = 100;
+
+// Helper functions
+const getPainLevelEmoji = (level: number): string => {
+  if (level <= 3) return '😊';
+  if (level <= 6) return '😐';
+  if (level <= 8) return '😣';
+  return '😰';
+};
+
+const formatTimestamp = (date: Date): string => {
+  return `${date.toLocaleDateString()} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+};
+
+const validatePainLevel = (value: number | null | undefined): number => {
+  return (value && value >= 1 && value <= 10) ? Math.round(value) : DEFAULT_PAIN_LEVEL;
+};
 
 export default function LogEventScreen() {
-  const EVENT_TYPES = [
-    { key: 'pain-start', label: 'Pain Start', emoji: '⚡' },
-    { key: 'pain-ending', label: 'Pain End', emoji: '🕊️' },
-    { key: 'fatigue', label: 'Fatigue', emoji: '😴' },
-    { key: 'treatment', label: 'Treatment', emoji: '🩹' },
-  ];
-
+  // State
   const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [selectedPainLevel, setSelectedPainLevel] = useState<number>(1);
+  const [selectedPainLevel, setSelectedPainLevel] = useState<number>(DEFAULT_PAIN_LEVEL);
   const [notes, setNotes] = useState("");
   const [timestamp, setTimestamp] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-  const handleQuickLog = (type: string, painLevel?: string) => {
-    const finalPainLevel = painLevel || selectedPainLevel;
-    const timestampString = `${timestamp.toLocaleDateString()} at ${timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    Alert.alert("Success", `${type} event logged with pain level ${finalPainLevel} at ${timestampString}!`);
-    // Reset form
+  // Event handlers
+  const resetForm = useCallback(() => {
     setSelectedType(null);
-    setSelectedPainLevel(1);
+    setSelectedPainLevel(DEFAULT_PAIN_LEVEL);
     setNotes("");
     setTimestamp(new Date());
-  };
+  }, []);
 
-  const handleFullSubmit = () => {
+  const handleQuickLog = useCallback((type: string, painLevel?: string) => {
+    const finalPainLevel = painLevel || selectedPainLevel.toString();
+    const timestampString = formatTimestamp(timestamp);
+    Alert.alert("Success", `${type} event logged with pain level ${finalPainLevel} at ${timestampString}!`);
+    resetForm();
+  }, [selectedPainLevel, timestamp, resetForm]);
+
+  const handleFullSubmit = useCallback(() => {
     if (!selectedType) {
       Alert.alert("Error", "Please select an event type");
       return;
     }
     const finalPainLevel = selectedPainLevel.toString();
-    const timestampString = `${timestamp.toLocaleDateString()} at ${timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    const timestampString = formatTimestamp(timestamp);
     Alert.alert("Success", `Event logged with pain level ${finalPainLevel} at ${timestampString}!`);
-    // Reset form
-    setSelectedType(null);
-    setSelectedPainLevel(1);
-    setNotes("");
-    setTimestamp(new Date());
-  };
+    resetForm();
+  }, [selectedType, selectedPainLevel, timestamp, resetForm]);
 
-  const handleDateEdit = () => {
+  // Date/Time handlers
+  const handleDateEdit = useCallback(() => {
     setShowDatePicker(true);
-  };
+  }, []);
 
-  const handleTimeEdit = () => {
+  const handleTimeEdit = useCallback(() => {
     setShowTimePicker(true);
-  };
+  }, []);
 
-  const onDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
+  const onDateChange = useCallback((event: DateTimePickerEvent, selectedDate?: Date) => {
     setShowDatePicker(false);
     if (event.type === 'set' && selectedDate) {
       const newTimestamp = new Date(selectedDate);
@@ -65,9 +105,9 @@ export default function LogEventScreen() {
       newTimestamp.setSeconds(timestamp.getSeconds());
       setTimestamp(newTimestamp);
     }
-  };
+  }, [timestamp]);
 
-  const onTimeChange = (event: DateTimePickerEvent, selectedTime?: Date) => {
+  const onTimeChange = useCallback((event: DateTimePickerEvent, selectedTime?: Date) => {
     setShowTimePicker(false);
     if (event.type === 'set' && selectedTime) {
       const newTimestamp = new Date(timestamp);
@@ -75,7 +115,12 @@ export default function LogEventScreen() {
       newTimestamp.setMinutes(selectedTime.getMinutes());
       setTimestamp(newTimestamp);
     }
-  };
+  }, [timestamp]);
+
+  // Pain level handler
+  const handlePainLevelChange = useCallback((value: number) => {
+    setSelectedPainLevel(validatePainLevel(value));
+  }, []);
 
   return (
     <>
@@ -86,21 +131,16 @@ export default function LogEventScreen() {
           <View style={styles.quickLogSection}>
             <Text style={styles.sectionTitle}>Quick Log</Text>
             <View style={styles.quickButtonsRow}>
-              <TouchableOpacity
-                style={[styles.quickButton, { backgroundColor: COLORS.error }]}
-                onPress={() => handleQuickLog('Pain Start', '7')}
-              >
-                <Text style={styles.quickButtonEmoji}>⚡</Text>
-                <Text style={styles.quickButtonText}>Pain Start</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.quickButton, { backgroundColor: COLORS.success }]}
-                onPress={() => handleQuickLog('Pain End', '2')}
-              >
-                <Text style={styles.quickButtonEmoji}>🕊️</Text>
-                <Text style={styles.quickButtonText}>Pain End</Text>
-              </TouchableOpacity>
+              {QUICK_LOG_EVENTS.map((event) => (
+                <TouchableOpacity
+                  key={event.type}
+                  style={[styles.quickButton, { backgroundColor: event.color }]}
+                  onPress={() => handleQuickLog(event.type, event.painLevel)}
+                >
+                  <Text style={styles.quickButtonEmoji}>{event.emoji}</Text>
+                  <Text style={styles.quickButtonText}>{event.type}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
 
@@ -109,9 +149,7 @@ export default function LogEventScreen() {
             <View style={styles.painLevelHeader}>
               <Text style={styles.label}>Pain Level: {selectedPainLevel}/10</Text>
               <Text style={styles.painLevelEmoji}>
-                {selectedPainLevel <= 3 ? '😊' :
-                  selectedPainLevel <= 6 ? '😐' :
-                    selectedPainLevel <= 8 ? '😣' : '😰'}
+                {getPainLevelEmoji(selectedPainLevel)}
               </Text>
             </View>
             {/* Easy-to-target slider */}
@@ -122,8 +160,8 @@ export default function LogEventScreen() {
                 minimumValue={1}
                 maximumValue={10}
                 step={1}
-                value={selectedPainLevel || 1}
-                onValueChange={(value) => setSelectedPainLevel(value && value >= 1 && value <= 10 ? Math.round(value) : 1)}
+                value={selectedPainLevel || DEFAULT_PAIN_LEVEL}
+                onValueChange={handlePainLevelChange}
                 minimumTrackTintColor={COLORS.primary}
                 maximumTrackTintColor={COLORS.primaryLight}
                 thumbTintColor={COLORS.primary}
@@ -161,7 +199,7 @@ export default function LogEventScreen() {
               placeholder="Tap to add details..."
               value={notes}
               onChangeText={setNotes}
-              maxLength={100}
+              maxLength={MAX_NOTE_LENGTH}
             />
           </View>
 
@@ -223,6 +261,7 @@ export default function LogEventScreen() {
 }
 
 const styles = StyleSheet.create({
+  // Layout
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
@@ -234,16 +273,26 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.xl,
     ...SHADOWS.large,
   },
-  // title style removed
   inputGroup: {
     marginBottom: SPACING.lg,
   },
+
+  // Typography
   label: {
     fontSize: FONT_SIZES.md,
     fontWeight: "600",
     marginBottom: SPACING.sm,
     color: COLORS.primaryDark,
   },
+  sectionTitle: {
+    fontSize: FONT_SIZES.lg,
+    fontWeight: "700",
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.md,
+    textAlign: 'center',
+  },
+
+  // Form inputs
   textInput: {
     borderWidth: 1.5,
     borderColor: COLORS.primaryLight,
@@ -254,6 +303,12 @@ const styles = StyleSheet.create({
     minHeight: 52,
     color: COLORS.primaryDark,
   },
+  noteInput: {
+    minHeight: 44,
+    textAlignVertical: 'top',
+  },
+
+  // Submit button
   submitButton: {
     backgroundColor: COLORS.primary,
     padding: 18,
@@ -310,13 +365,6 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.lg,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.neutral,
-  },
-  sectionTitle: {
-    fontSize: FONT_SIZES.lg,
-    fontWeight: "700",
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.md,
-    textAlign: 'center',
   },
   quickButtonsRow: {
     flexDirection: 'row',
@@ -375,12 +423,6 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     minWidth: 35,
     textAlign: 'center',
-  },
-
-  // Note Input
-  noteInput: {
-    minHeight: 44,
-    textAlignVertical: 'top',
   },
 
   // Timestamp Styles
