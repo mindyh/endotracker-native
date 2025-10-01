@@ -137,7 +137,8 @@ const EventTypeItem: React.FC<{
             <TouchableOpacity
                 style={styles.dragHandle}
                 onLongPress={drag}
-                disabled={isActive}
+                delayLongPress={25}
+                activeOpacity={0.6}
             >
                 <Ionicons name="reorder-three" size={24} color={COLORS.textSecondary} />
             </TouchableOpacity>
@@ -207,7 +208,7 @@ export default function EventTypesSettingsScreen() {
     );
 
     return (
-        <View style={styles.container}>
+        <GestureHandlerRootView style={styles.container}>
             <ScrollView style={styles.content}>
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Event Types</Text>
@@ -216,15 +217,13 @@ export default function EventTypesSettingsScreen() {
                     </Text>
 
                     <View style={styles.dragListContainer}>
-                        <GestureHandlerRootView style={{ flex: 1 }}>
-                            <DraggableFlatList
-                                data={eventTypes}
-                                onDragEnd={({ data }: { data: EventType[] }) => reorderEventTypes(data)}
-                                keyExtractor={(item: EventType) => item.key}
-                                renderItem={renderEventTypeItem}
-                                scrollEnabled={false}
-                            />
-                        </GestureHandlerRootView>
+                        <DraggableFlatList
+                            data={eventTypes}
+                            onDragEnd={({ data }: { data: EventType[] }) => reorderEventTypes(data)}
+                            keyExtractor={(item: EventType) => item.key}
+                            renderItem={renderEventTypeItem}
+                            scrollEnabled={false}
+                        />
                     </View>
 
                     <View style={styles.actionButtons}>
@@ -248,7 +247,7 @@ export default function EventTypesSettingsScreen() {
                 onSave={handleSaveEventType}
                 onDelete={deleteEventType}
             />
-        </View>
+        </GestureHandlerRootView>
     );
 }
 
@@ -281,6 +280,7 @@ const styles = StyleSheet.create({
     },
     dragListContainer: {
         marginBottom: SPACING.lg,
+        minHeight: 200,
     },
     eventTypeItem: {
         flexDirection: 'row',
@@ -301,15 +301,20 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
     },
     dragHandle: {
-        paddingRight: SPACING.md,
+        width: 44,
+        height: 44,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: SPACING.sm,
     },
     eventTypeContent: {
         flexDirection: 'row',
         alignItems: 'center',
         flex: 1,
-        paddingVertical: SPACING.xs,
-        paddingHorizontal: SPACING.sm,
+        paddingVertical: SPACING.sm,
+        paddingHorizontal: SPACING.md,
         borderRadius: BORDER_RADIUS.sm,
+        minHeight: 44,
     },
     eventTypeEmoji: {
         fontSize: 24,
