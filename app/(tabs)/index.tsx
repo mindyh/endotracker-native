@@ -8,6 +8,7 @@ import { useEventHistory, LoggedEvent } from '../../contexts/EventHistoryContext
 import { useEventTypes } from '../../contexts/EventTypesContext';
 import EditLoggedEventModal from '../../components/EditLoggedEventModal';
 import EventListItem from '../../components/EventListItem';
+import Toast from 'react-native-root-toast';
 
 // Types
 interface PainLocation {
@@ -75,7 +76,7 @@ export default function LogEventScreen() {
   const { eventTypes } = useEventTypes();
 
   // State
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<string | null>(eventTypes.length > 0 ? eventTypes[0].key : null);
   const [selectedPainLevel, setSelectedPainLevel] = useState<number>(DEFAULT_PAIN_LEVEL);
   const [selectedPainLocations, setSelectedPainLocations] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
@@ -87,7 +88,7 @@ export default function LogEventScreen() {
 
   // Event handlers
   const resetForm = useCallback(() => {
-    setSelectedType(null);
+    setSelectedType(eventTypes.length > 0 ? eventTypes[0].key : null);
     setSelectedPainLevel(DEFAULT_PAIN_LEVEL);
     setSelectedPainLocations([]);
     setNotes("");
@@ -107,7 +108,13 @@ export default function LogEventScreen() {
 
   const handleFullSubmit = useCallback(() => {
     if (!selectedType) {
-      Alert.alert("Error", "Please select an event type");
+      Toast.show("Please select an event type", {
+        duration: Toast.durations.SHORT,
+        position: Toast.positions.BOTTOM,
+        shadow: true,
+        animation: true,
+        hideOnPress: true,
+      });
       return;
     }
 
@@ -129,9 +136,13 @@ export default function LogEventScreen() {
     // Add to history
     addEvent(loggedEvent);
 
-    const timestampString = formatTimestamp(timestamp);
-    Alert.alert("Success", `${eventType.label} logged at ${timestampString}!`);
-    resetForm();
+    // const timestampString = formatTimestamp(timestamp);
+    // Removed success alert per user request
+    // Only reset pain level, pain locations, notes, and timestamp, but keep selectedType
+    setSelectedPainLevel(DEFAULT_PAIN_LEVEL);
+    setSelectedPainLocations([]);
+    setNotes("");
+    setTimestamp(new Date());
   }, [selectedType, selectedPainLevel, selectedPainLocations, notes, timestamp, resetForm, addEvent, eventTypes]);
 
   // Date/Time handlers
@@ -185,7 +196,9 @@ export default function LogEventScreen() {
                   <TouchableOpacity
                     key={type.key}
                     style={[styles.typeChip, selected && styles.typeChipSelected]}
-                    onPress={() => setSelectedType(prev => prev === type.key ? null : type.key)}
+                    onPress={() => {
+                      if (!selected) setSelectedType(type.key);
+                    }}
                   >
                     <Text style={styles.typeChipEmoji}>{type.emoji}</Text>
                     <Text style={[styles.typeChipText, selected && styles.typeChipTextSelected]}>
