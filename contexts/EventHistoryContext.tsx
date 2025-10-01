@@ -13,6 +13,8 @@ export interface LoggedEvent {
 interface EventHistoryContextType {
     eventHistory: LoggedEvent[];
     addEvent: (event: LoggedEvent) => void;
+    updateEvent: (id: string, updated: Partial<LoggedEvent>) => void;
+    deleteEvent: (id: string) => void;
     clearHistory: () => void;
 }
 
@@ -37,12 +39,20 @@ export const EventHistoryProvider: React.FC<EventHistoryProviderProps> = ({ chil
         setEventHistory(prev => [event, ...prev]);
     };
 
+    const updateEvent = (id: string, updated: Partial<LoggedEvent>) => {
+        setEventHistory(prev => prev.map(ev => ev.id === id ? { ...ev, ...updated } : ev));
+    };
+
+    const deleteEvent = (id: string) => {
+        setEventHistory(prev => prev.filter(ev => ev.id !== id));
+    };
+
     const clearHistory = () => {
         setEventHistory([]);
     };
 
     return (
-        <EventHistoryContext.Provider value={{ eventHistory, addEvent, clearHistory }}>
+        <EventHistoryContext.Provider value={{ eventHistory, addEvent, updateEvent, deleteEvent, clearHistory }}>
             {children}
         </EventHistoryContext.Provider>
     );

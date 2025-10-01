@@ -6,6 +6,8 @@ import { COLORS, SHADOWS, SPACING, BORDER_RADIUS, FONT_SIZES } from "../../const
 import Slider from '@react-native-community/slider';
 import { useEventHistory, LoggedEvent } from '../../contexts/EventHistoryContext';
 import { useEventTypes } from '../../contexts/EventTypesContext';
+import EditLoggedEventModal from '../../components/EditLoggedEventModal';
+import EventListItem from '../../components/EventListItem';
 
 // Types
 interface PainLocation {
@@ -69,7 +71,7 @@ const formatHistoryTimestamp = (date: Date): string => {
 
 export default function LogEventScreen() {
   // Context
-  const { eventHistory, addEvent } = useEventHistory();
+  const { eventHistory, addEvent, updateEvent, deleteEvent } = useEventHistory();
   const { eventTypes } = useEventTypes();
 
   // State
@@ -80,6 +82,8 @@ export default function LogEventScreen() {
   const [timestamp, setTimestamp] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<LoggedEvent | null>(null);
 
   // Event handlers
   const resetForm = useCallback(() => {
@@ -295,32 +299,25 @@ export default function LogEventScreen() {
           <View style={styles.recentEventsCard}>
             <Text style={styles.recentEventsTitle}>Recent Events</Text>
             {eventHistory.slice(0, 3).map((event) => (
-              <View key={event.id} style={styles.recentEventItem}>
-                <View style={styles.recentEventHeader}>
-                  <Text style={styles.recentEventEmoji}>{event.emoji}</Text>
-                  <Text style={styles.recentEventType}>{event.type}</Text>
-                  <Text style={styles.recentEventTime}>
-                    {formatHistoryTimestamp(event.timestamp)}
-                  </Text>
-                </View>
-                {event.painLevel && (
-                  <Text style={styles.recentEventDetail}>
-                    Pain Level: {event.painLevel}/10
-                  </Text>
-                )}
-                {event.painLocations && event.painLocations.length > 0 && (
-                  <Text style={styles.recentEventDetail}>
-                    Locations: {formatPainLocations(event.painLocations)}
-                  </Text>
-                )}
-                {event.notes && (
-                  <Text style={styles.recentEventDetail}>
-                    Note: {event.notes}
-                  </Text>
-                )}
-              </View>
+              <EventListItem
+                key={event.id}
+                event={event}
+                onPress={() => { setEditingEvent(event); setEditModalVisible(true); }}
+                formatHistoryTimestamp={formatHistoryTimestamp}
+                formatPainLocations={formatPainLocations}
+              />
             ))}
           </View>
+        )}
+        {/* Edit Event Modal */}
+        {editingEvent && (
+          <EditLoggedEventModal
+            visible={editModalVisible}
+            event={editingEvent}
+            onClose={() => setEditModalVisible(false)}
+            onSave={(ev: LoggedEvent) => { updateEvent(ev.id, ev); setEditModalVisible(false); }}
+            onDelete={(id: string) => { deleteEvent(id); setEditModalVisible(false); }}
+          />
         )}
       </ScrollView>
 

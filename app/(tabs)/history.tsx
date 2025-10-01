@@ -1,7 +1,9 @@
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES, FONT_WEIGHTS } from "../../constants/theme";
 import { useEventHistory } from '../../contexts/EventHistoryContext';
+import EditLoggedEventModal from '../../components/EditLoggedEventModal';
 
 // Helper functions
 const formatPainLocations = (locationKeys: string[]): string => {
@@ -33,10 +35,17 @@ const formatHistoryTimestamp = (date: Date): string => {
 };
 
 export default function HistoryScreen() {
-    const { eventHistory } = useEventHistory();
+    const { eventHistory, updateEvent, deleteEvent } = useEventHistory();
+    const [editModalVisible, setEditModalVisible] = React.useState(false);
+    const [editingEvent, setEditingEvent] = React.useState(null);
 
     const renderHistoryItem = (item: any) => (
-        <View key={item.id} style={styles.historyItem}>
+        <TouchableOpacity
+            key={item.id}
+            style={styles.historyItem}
+            onPress={() => { setEditingEvent(item); setEditModalVisible(true); }}
+            activeOpacity={0.8}
+        >
             <View style={styles.historyHeader}>
                 <View style={styles.eventTypeContainer}>
                     <Text style={styles.eventEmoji}>{item.emoji}</Text>
@@ -65,7 +74,7 @@ export default function HistoryScreen() {
                     {item.notes}
                 </Text>
             )}
-        </View>
+        </TouchableOpacity>
     );
 
     return (
@@ -88,6 +97,16 @@ export default function HistoryScreen() {
                     </View>
                 )}
             </ScrollView>
+            {/* Edit Event Modal */}
+            {editingEvent && (
+                <EditLoggedEventModal
+                    visible={editModalVisible}
+                    event={editingEvent}
+                    onClose={() => setEditModalVisible(false)}
+                    onSave={(ev: any) => { updateEvent(ev.id, ev); setEditModalVisible(false); }}
+                    onDelete={(id: string) => { deleteEvent(id); setEditModalVisible(false); }}
+                />
+            )}
         </View>
     );
 }
