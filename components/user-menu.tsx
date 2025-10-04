@@ -1,21 +1,25 @@
-import React, { useState, useCallback, useMemo } from "react";
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    StyleSheet,
-    Pressable,
-    Animated,
-    Modal,
-    StatusBar,
-    SafeAreaView,
-    Dimensions,
-    Easing,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { COLORS, SHADOWS, SPACING, FONT_SIZES, FONT_WEIGHTS } from "../constants/theme";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+    Animated,
+    Dimensions,
+    Easing,
+    Modal,
+    Platform,
+    Pressable,
+    SafeAreaView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { QUOTES } from "../constants/quotes";
+import { COLORS, FONT_SIZES, FONT_WEIGHTS, SHADOWS, SPACING } from "../constants/theme";
+import AboutDrawerContent from "./AboutDrawerContent";
+// import DrawerWrapper from "./DrawerWrapper"; // Temporarily disabled for testing
+import SettingsDrawerContent from "./SettingsDrawerContent";
 
 // Constants
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -78,6 +82,57 @@ export default function UserMenu({ visible, onClose }: UserMenuProps) {
     const [overlayOpacity] = useState(new Animated.Value(0));
     const [isAnimating, setIsAnimating] = useState(false);
 
+    // State for drawer modals (web only)
+    const [settingsDrawerVisible, setSettingsDrawerVisible] = useState(false);
+    const [aboutDrawerVisible, setAboutDrawerVisible] = useState(false);
+
+    // Animation values for drawers
+    const [settingsSlideAnim] = useState(new Animated.Value(SCREEN_WIDTH));
+    const [aboutSlideAnim] = useState(new Animated.Value(SCREEN_WIDTH));
+    const [settingsOpacity] = useState(new Animated.Value(0));
+    const [aboutOpacity] = useState(new Animated.Value(0));
+
+
+
+    useEffect(() => {
+        if (settingsDrawerVisible) {
+            // Animate in
+            settingsSlideAnim.setValue(SCREEN_WIDTH);
+            settingsOpacity.setValue(0);
+            Animated.parallel([
+                Animated.timing(settingsSlideAnim, {
+                    toValue: 0,
+                    ...ANIMATION_CONFIG.OPEN.drawer,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(settingsOpacity, {
+                    toValue: 1,
+                    ...ANIMATION_CONFIG.OPEN.overlay,
+                    useNativeDriver: true,
+                }),
+            ]).start();
+        }
+        if (aboutDrawerVisible) {
+            // Animate in
+            aboutSlideAnim.setValue(SCREEN_WIDTH);
+            aboutOpacity.setValue(0);
+            Animated.parallel([
+                Animated.timing(aboutSlideAnim, {
+                    toValue: 0,
+                    ...ANIMATION_CONFIG.OPEN.drawer,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(aboutOpacity, {
+                    toValue: 1,
+                    ...ANIMATION_CONFIG.OPEN.overlay,
+                    useNativeDriver: true,
+                }),
+            ]).start();
+        }
+    }, [settingsDrawerVisible, aboutDrawerVisible, settingsSlideAnim, aboutSlideAnim, settingsOpacity, aboutOpacity]);
+
+
+
     const handleCloseAnimation = useCallback(() => {
         if (isAnimating) return;
 
@@ -127,19 +182,65 @@ export default function UserMenu({ visible, onClose }: UserMenuProps) {
         action?.();
     }, [handleCloseAnimation]);
 
+    const closeSettingsDrawer = useCallback(() => {
+        Animated.parallel([
+            Animated.timing(settingsSlideAnim, {
+                toValue: SCREEN_WIDTH,
+                ...ANIMATION_CONFIG.CLOSE.drawer,
+                useNativeDriver: true,
+            }),
+            Animated.timing(settingsOpacity, {
+                toValue: 0,
+                ...ANIMATION_CONFIG.CLOSE.overlay,
+                useNativeDriver: true,
+            }),
+        ]).start(() => {
+            setSettingsDrawerVisible(false);
+        });
+    }, [settingsSlideAnim, settingsOpacity]);
+
+    const closeAboutDrawer = useCallback(() => {
+        Animated.parallel([
+            Animated.timing(aboutSlideAnim, {
+                toValue: SCREEN_WIDTH,
+                ...ANIMATION_CONFIG.CLOSE.drawer,
+                useNativeDriver: true,
+            }),
+            Animated.timing(aboutOpacity, {
+                toValue: 0,
+                ...ANIMATION_CONFIG.CLOSE.overlay,
+                useNativeDriver: true,
+            }),
+        ]).start(() => {
+            setAboutDrawerVisible(false);
+        });
+    }, [aboutSlideAnim, aboutOpacity]);
+
     // Menu configuration - easier to maintain and modify
     const menuOptions: MenuOption[] = useMemo(() => [
         {
             id: "settings",
             title: "Settings",
             icon: "settings-outline",
-            onPress: createMenuAction(() => router.push("/settings")),
+            onPress: Platform.OS === 'web'
+                ? () => {
+                    handleCloseAnimation();
+                    // Delay to ensure user menu closes first
+                    setTimeout(() => setSettingsDrawerVisible(true), 100);
+                }
+                : createMenuAction(() => router.push("/settings")),
         },
         {
             id: "about",
             title: "About",
             icon: "information-circle-outline",
-            onPress: createMenuAction(() => router.push("/about")),
+            onPress: Platform.OS === 'web'
+                ? () => {
+                    handleCloseAnimation();
+                    // Delay to ensure user menu closes first
+                    setTimeout(() => setAboutDrawerVisible(true), 100);
+                }
+                : createMenuAction(() => router.push("/about")),
         },
         {
             id: "help",
@@ -160,7 +261,7 @@ export default function UserMenu({ visible, onClose }: UserMenuProps) {
             color: COLORS.error,
             onPress: createMenuAction(() => console.log("Sign out clicked")),
         },
-    ], [createMenuAction, router]);
+    ], [createMenuAction, router, handleCloseAnimation]);
 
     const renderMenuItem = useCallback((option: MenuOption) => {
         if (option.id === "divider") {
@@ -192,77 +293,135 @@ export default function UserMenu({ visible, onClose }: UserMenuProps) {
     }, []);
 
     return (
-        <Modal
-            visible={visible}
-            transparent
-            animationType="none"
-            onRequestClose={handleCloseAnimation}
-            statusBarTranslucent
-        >
-            <StatusBar backgroundColor="rgba(0, 0, 0, 0.5)" barStyle="light-content" />
+        <>
+            <Modal
+                visible={visible}
+                transparent
+                animationType="none"
+                onRequestClose={handleCloseAnimation}
+                statusBarTranslucent
+            >
+                <StatusBar backgroundColor="rgba(0, 0, 0, 0.5)" barStyle="light-content" />
 
-            <View style={StyleSheet.absoluteFillObject}>
-                {/* Touch overlay - always responsive */}
-                <Pressable
-                    style={StyleSheet.absoluteFillObject}
-                    onPress={handleCloseAnimation}
-                />
+                <View style={StyleSheet.absoluteFillObject}>
+                    {/* Touch overlay - always responsive */}
+                    <Pressable
+                        style={StyleSheet.absoluteFillObject}
+                        onPress={handleCloseAnimation}
+                    />
 
-                {/* Animated overlay background - visual only */}
-                <Animated.View
-                    style={[
-                        styles.overlay,
-                        {
-                            opacity: overlayOpacity,
-                        },
-                    ]}
-                    pointerEvents="none"
-                />
+                    {/* Animated overlay background - visual only */}
+                    <Animated.View
+                        style={[
+                            styles.overlay,
+                            {
+                                opacity: overlayOpacity,
+                            },
+                        ]}
+                        pointerEvents="none"
+                    />
 
-                {/* Drawer */}
-                <Animated.View
-                    style={[
-                        styles.drawerContainer,
-                        {
-                            transform: [{ translateX: slideAnim }],
-                        },
-                    ]}
-                >
-                    <Pressable style={styles.drawerContent} onPress={() => { }}>
-                        <SafeAreaView style={styles.drawerInner}>
-                            {/* Header */}
-                            <View style={styles.drawerHeader}>
-                                <Text style={styles.drawerTitle}></Text>
-                            </View>
-
-                            {/* User Info */}
-                            <View style={styles.userSection}>
-                                <View style={styles.userAvatar}>
-                                    <Ionicons name="person" size={32} color={COLORS.white} />
+                    {/* Drawer */}
+                    <Animated.View
+                        style={[
+                            styles.drawerContainer,
+                            {
+                                transform: [{ translateX: slideAnim }],
+                            },
+                        ]}
+                    >
+                        <Pressable style={styles.drawerContent} onPress={() => { }}>
+                            <SafeAreaView style={styles.drawerInner}>
+                                {/* Header */}
+                                <View style={styles.drawerHeader}>
+                                    <Text style={styles.drawerTitle}></Text>
                                 </View>
-                                <View style={styles.userInfo}>
-                                    <Text style={styles.userName}>{USER_INFO.name}</Text>
-                                    <Text style={styles.userEmail}>{USER_INFO.email}</Text>
+
+                                {/* User Info */}
+                                <View style={styles.userSection}>
+                                    <View style={styles.userAvatar}>
+                                        <Ionicons name="person" size={32} color={COLORS.white} />
+                                    </View>
+                                    <View style={styles.userInfo}>
+                                        <Text style={styles.userName}>{USER_INFO.name}</Text>
+                                        <Text style={styles.userEmail}>{USER_INFO.email}</Text>
+                                    </View>
                                 </View>
-                            </View>
 
-                            {/* Menu Items */}
-                            <View style={styles.menuSection}>
-                                {menuOptions.map(renderMenuItem)}
-                            </View>
+                                {/* Menu Items */}
+                                <View style={styles.menuSection}>
+                                    {menuOptions.map(renderMenuItem)}
+                                </View>
 
-                            {/* Inspirational Quote at the bottom */}
-                            <View style={styles.quoteContainer}>
-                                <Text style={styles.quoteText}>
-                                    “{quote.text}”
-                                </Text>
-                                <Text style={styles.quoteAuthor}>~ {quote.author}</Text>
-                            </View>
-                        </SafeAreaView>
-                    </Pressable>
+                                {/* Inspirational Quote at the bottom */}
+                                <View style={styles.quoteContainer}>
+                                    <Text style={styles.quoteText}>
+                                        “{quote.text}”
+                                    </Text>
+                                    <Text style={styles.quoteAuthor}>~ {quote.author}</Text>
+                                </View>
+                            </SafeAreaView>
+                        </Pressable>
+                    </Animated.View>
+                </View>
+            </Modal>
+
+            {/* Settings Full-Screen Animated Overlay */}
+            {settingsDrawerVisible && (
+                <Animated.View style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: COLORS.background,
+                    zIndex: 9999,
+                    opacity: settingsOpacity,
+                    transform: [{ translateX: settingsSlideAnim }],
+                }}>
+                    <SafeAreaView style={{ flex: 1 }}>
+                        <View style={styles.drawerOverlayHeader}>
+                            <TouchableOpacity
+                                onPress={closeSettingsDrawer}
+                                style={styles.backButton}
+                            >
+                                <Ionicons name="arrow-back" size={24} color={COLORS.primary} />
+                            </TouchableOpacity>
+                            <Text style={styles.drawerOverlayTitle}>Settings</Text>
+                        </View>
+                        <SettingsDrawerContent onClose={closeSettingsDrawer} />
+                    </SafeAreaView>
                 </Animated.View>
-            </View>
-        </Modal>
+            )}
+
+            {/* About Full-Screen Animated Overlay */}
+            {aboutDrawerVisible && (
+                <Animated.View style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: COLORS.background,
+                    zIndex: 9999,
+                    opacity: aboutOpacity,
+                    transform: [{ translateX: aboutSlideAnim }],
+                }}>
+                    <SafeAreaView style={{ flex: 1 }}>
+                        <View style={styles.drawerOverlayHeader}>
+                            <TouchableOpacity
+                                onPress={closeAboutDrawer}
+                                style={styles.backButton}
+                            >
+                                <Ionicons name="arrow-back" size={24} color={COLORS.primary} />
+                            </TouchableOpacity>
+                            <Text style={styles.drawerOverlayTitle}>About</Text>
+                        </View>
+                        <AboutDrawerContent onClose={closeAboutDrawer} />
+                    </SafeAreaView>
+                </Animated.View>
+            )}
+        </>
     );
 }
 
@@ -397,5 +556,27 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
         textAlign: 'left',
         width: '100%',
+    },
+    // Drawer overlay styles
+    drawerOverlayHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: SPACING.lg,
+        paddingVertical: SPACING.md,
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.neutral,
+        backgroundColor: COLORS.white,
+    },
+    backButton: {
+        padding: SPACING.sm,
+        marginRight: SPACING.md,
+        borderRadius: 20,
+        backgroundColor: COLORS.gray100,
+    },
+    drawerOverlayTitle: {
+        fontSize: FONT_SIZES.xl,
+        fontWeight: FONT_WEIGHTS.bold,
+        color: COLORS.primary,
+        flex: 1,
     },
 });
