@@ -366,16 +366,17 @@ export default function UserMenu({ visible, onClose }: UserMenuProps) {
                 </View>
             </Modal>
 
-            {/* Settings Full-Screen Animated Overlay */}
-            {settingsDrawerVisible && (
+            {/* Settings Full-Screen Animated Modal */}
+            <Modal
+                visible={settingsDrawerVisible}
+                transparent
+                animationType="none"
+                onRequestClose={closeSettingsDrawer}
+                statusBarTranslucent
+            >
                 <Animated.View style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
+                    flex: 1,
                     backgroundColor: COLORS.background,
-                    zIndex: 9999,
                     opacity: settingsOpacity,
                     transform: [{ translateX: settingsSlideAnim }],
                 }}>
@@ -392,18 +393,19 @@ export default function UserMenu({ visible, onClose }: UserMenuProps) {
                         <SettingsDrawerContent onClose={closeSettingsDrawer} />
                     </SafeAreaView>
                 </Animated.View>
-            )}
+            </Modal>
 
-            {/* About Full-Screen Animated Overlay */}
-            {aboutDrawerVisible && (
+            {/* About Full-Screen Animated Modal */}
+            <Modal
+                visible={aboutDrawerVisible}
+                transparent
+                animationType="none"
+                onRequestClose={closeAboutDrawer}
+                statusBarTranslucent
+            >
                 <Animated.View style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
+                    flex: 1,
                     backgroundColor: COLORS.background,
-                    zIndex: 9999,
                     opacity: aboutOpacity,
                     transform: [{ translateX: aboutSlideAnim }],
                 }}>
@@ -420,7 +422,7 @@ export default function UserMenu({ visible, onClose }: UserMenuProps) {
                         <AboutDrawerContent onClose={closeAboutDrawer} />
                     </SafeAreaView>
                 </Animated.View>
-            )}
+            </Modal>
         </>
     );
 }

@@ -102,44 +102,6 @@ export default function SettingsDrawerContent({ onClose }: SettingsDrawerContent
                         "list-outline",
                         handleEventTypesSettings
                     )}
-                    {renderSettingItem(
-                        "Theme",
-                        "Choose your preferred theme",
-                        "color-palette-outline",
-                        () => Alert.alert("Coming Soon", "Theme selection will be available in a future update.")
-                    )}
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Privacy & Security</Text>
-                    {renderSettingItem(
-                        "Privacy Settings",
-                        "Manage your privacy preferences",
-                        "shield-outline",
-                        () => Alert.alert("Coming Soon", "Privacy settings will be available in a future update.")
-                    )}
-                    {renderSettingItem(
-                        "Data Security",
-                        "View security settings and options",
-                        "lock-closed-outline",
-                        () => Alert.alert("Coming Soon", "Security settings will be available in a future update.")
-                    )}
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Account</Text>
-                    {renderSettingItem(
-                        "Account Settings",
-                        "Manage your account information",
-                        "person-outline",
-                        () => Alert.alert("Coming Soon", "Account settings will be available in a future update.")
-                    )}
-                    {renderSettingItem(
-                        "Subscription",
-                        "View and manage your subscription",
-                        "card-outline",
-                        () => Alert.alert("Coming Soon", "Subscription management will be available in a future update.")
-                    )}
                 </View>
             </View>
         </ScrollView>
